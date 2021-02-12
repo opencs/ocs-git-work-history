@@ -134,7 +134,7 @@ class TestGitDiff(unittest.TestCase):
         for e in d:
             self.assertFalse(e.file_name in files)
             files.add(e.file_name)
-        self.assertEquals(len(files), 2)
+        self.assertEqual(len(files), 2)
         self.assertTrue('file1' in files)
         self.assertTrue('file2' in files)
 

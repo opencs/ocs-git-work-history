@@ -16,26 +16,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
 import re
-import datetime
+from datetime import datetime
 import subprocess
 from pathlib import Path
 from .model import *
 
-AUTHOR_VALUE_PATTERN = re.compile(r'^([^<]+) <([^>]+)>$')
-
 
 def parse_iso_date(s):
     """
-    Parses a Git date when the parameter '--date=iso' is used.
+    Parses a strict ISO date (e.g.: '2021-01-21T14:24:07-03:00').
     """
-    # Example of date with --date=iso: '2020-12-17 19:19:19 -0300'
-    return datetime.datetime.strptime(s, '%Y-%m-%d %H:%M:%S %z')
-
-
-def parse_commit(s):
-    # commit 5a4b7b3713154a0b89d0214556eee78aa451e28d
-    # commit 5a4b7b3713154a0b89d0214556eee78aa451e28d (bitbucket/swagger, swagger)
-    pass
+    return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S%z')
 
 
 GIT_LOG_COMMAND = [

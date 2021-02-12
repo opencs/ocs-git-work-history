@@ -16,27 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
 import unittest
-import tempfile
-from datetime import datetime, timedelta, timezone
-from .parser import *
-from ..test_utils import SAMPLE_DIR, ROOT_DIR
+import json
+from pathlib import Path
+#from .parser import *
 
-
-class TestParse(unittest.TestCase):
-
-    def test_parse_iso_date(self):
-        d1 = parse_iso_date('2021-01-21T14:24:07-03:00')
-        d2 = datetime(year=2021, month=1, day=21,
-                      hour=14, minute=24, second=7, tzinfo=timezone(timedelta(hours=-3)))
-        self.assertEqual(d1, d2)
-
-    def test_run_into_myself(self):
-        s = run_git_log(ROOT_DIR)
-        self.assertIsNotNone(s)
-
-        s = run_git_log(tempfile.gettempdir())
-        self.assertIsNone(s)
-
-
-if __name__ == '__main__':
-    unittest.main()
+ROOT_DIR = Path(__file__).parent.parent
+SAMPLE_DIR = ROOT_DIR / 'unittest-samples'
+TEST_CONFIG_FILE = ROOT_DIR / 'test-config.json'
+if TEST_CONFIG_FILE.exists():
+    with open(TEST_CONFIG_FILE, 'r') as inp:
+        TEST_CONFIG = json.load(inp)
+else:
+    TEST_CONFIG = None
