@@ -1,0 +1,763 @@
+*****
+cee812a745058215d6c62adab103cccf23e9db02
+ff53cd91a8906faa04e63331feb25216cb384150 e08b051a6305e132d6a5d0002c5f62f701b5cb43
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2021-01-22T00:56:54+00:00
+
+*****
+e08b051a6305e132d6a5d0002c5f62f701b5cb43
+4e16aa58158dc51732408aee2832941be02ec86d dcacc4020c4c0c21ea7c3753f6cfb7e29eb12fc2
+William Shakespeare
+william.shakespeare@email.com
+2021-01-21T20:40:27+00:00
+
+*****
+55cc79a6bdab18036fc0e744d95f2e2cf09c1ea7
+4e16aa58158dc51732408aee2832941be02ec86d dcacc4020c4c0c21ea7c3753f6cfb7e29eb12fc2
+Eric Arthur Blair
+george.orwell@email.com
+2021-01-21T17:39:10+00:00
+
+*****
+dcacc4020c4c0c21ea7c3753f6cfb7e29eb12fc2
+4e16aa58158dc51732408aee2832941be02ec86d
+Eric Arthur Blair
+george.orwell@email.com
+2021-01-21T14:24:07-03:00
+
+1	3	.gitignore
+70	0	code/configuration/migrations/0001_initial.py
+0	0	code/configuration/migrations/__init__.py
+74	0	code/content_management/migrations/0001_initial.py
+0	0	code/content_management/migrations/__init__.py
+46	0	code/user_management/migrations/0001_initial.py
+29	0	code/user_management/migrations/0002_auto_20210121_1129.py
+0	0	code/user_management/migrations/__init__.py
+1	1	migrate/migrate.sh
+
+*****
+ee417640e2ae6480b7bb22b0554f1f118d0c161f
+4d1c8e40e36d51b1c0cbb0113430726e9f4e80ef c2e77d6cf1dcfe9f291d02991a92bc26bcca0556
+Shinmen Takezō
+musashi.miyamoto@email.com
+2021-01-21T13:36:35+00:00
+
+*****
+c2e77d6cf1dcfe9f291d02991a92bc26bcca0556
+4d1c8e40e36d51b1c0cbb0113430726e9f4e80ef
+Shinmen Takezō
+musashi.miyamoto@email.com
+2021-01-21T13:36:15+00:00
+
+2	2	code/theproduct/static/css/thecustomer.css
+
+*****
+4e16aa58158dc51732408aee2832941be02ec86d
+1c1255e0b7e7f3c59fd818f5a8a33255601d49c7 2af27b1e95c1bc94af16fa954e2bafd28dc06de5
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2021-01-20T18:37:51+00:00
+
+*****
+c5b468e8d0c0752702c3b8b8a4be7ef7f7a0bbd5
+1c1255e0b7e7f3c59fd818f5a8a33255601d49c7 2af27b1e95c1bc94af16fa954e2bafd28dc06de5
+Eric Arthur Blair
+george.orwell@email.com
+2021-01-20T18:18:19+00:00
+
+*****
+2af27b1e95c1bc94af16fa954e2bafd28dc06de5
+1c1255e0b7e7f3c59fd818f5a8a33255601d49c7
+Eric Arthur Blair
+george.orwell@email.com
+2021-01-20T15:15:47-03:00
+
+2	1	code/theproduct/settings.py
+1	0	code/config/requirements.txt
+14	3	code/configuration/models.py
+12	9	code/user_management/admin.py
+23	0	code/user_management/forms.py
+7	0	code/user_management/models.py
+
+*****
+1c1255e0b7e7f3c59fd818f5a8a33255601d49c7
+5ed07d0010a7b03a560c673f7cf150eb247d0865 dea65210032ee4818b206e4d2b75b765f39ef95d
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2021-01-05T19:39:49+00:00
+
+*****
+13a6457de0e06e74db40b1210625dc2b7664e784
+5ed07d0010a7b03a560c673f7cf150eb247d0865 dea65210032ee4818b206e4d2b75b765f39ef95d
+Shinmen Takezō
+musashi.miyamoto@email.com
+2021-01-05T19:22:22+00:00
+
+*****
+628f439de393b69827b4afaf7196d4c6c9da7271
+4d1c8e40e36d51b1c0cbb0113430726e9f4e80ef dea65210032ee4818b206e4d2b75b765f39ef95d
+Shinmen Takezō
+musashi.miyamoto@email.com
+2021-01-05T18:16:45+00:00
+
+*****
+dea65210032ee4818b206e4d2b75b765f39ef95d
+5ed07d0010a7b03a560c673f7cf150eb247d0865
+Shinmen Takezō
+franco@Francos-iMac-SSD.local
+2021-01-05T10:54:57-03:00
+
+18	2	code/theproduct/static/css/thecustomer.css
+1	0	code/content_management/__init__.py
+1	0	code/user_management/__init__.py
+
+*****
+1154eef3f7640cbb5edfdd1030d54cff5081a4b3
+4d1c8e40e36d51b1c0cbb0113430726e9f4e80ef
+Shinmen Takezō
+musashi.miyamoto@email.com
+2020-12-27T17:01:44+00:00
+
+1	0	code/content_management/__init__.py
+
+*****
+5ed07d0010a7b03a560c673f7cf150eb247d0865
+80eed71998e98c355464eccabb89637acde323c5
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-21T19:46:32-03:00
+
+2	1	code/config/requirements.txt
+
+*****
+80eed71998e98c355464eccabb89637acde323c5
+e34f4b4ae585218849dccedb759d3f2ba816c938
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-21T16:34:43-03:00
+
+11	16	code/user_management/api/serializers.py
+0	4	code/user_management/api/viewsets.py
+
+*****
+e34f4b4ae585218849dccedb759d3f2ba816c938
+1687b615d743e46c9bd156d89794c522fc20fedf
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-21T16:28:17-03:00
+
+6	2	code/theproduct/jazzmin/jazzmin_settings.py
+5	1	code/theproduct/settings.py
+3	0	code/theproduct/urls.py
+2	1	code/configuration/admin.py
+6	5	code/configuration/models.py
+1	1	code/password_reset/serializers.py
+1	1	code/password_reset/views.py
+0	0	code/user_management/__init__.py
+36	0	code/user_management/admin.py
+0	0	code/user_management/api/__init__.py
+43	0	code/user_management/api/serializers.py
+28	0	code/user_management/api/viewsets.py
+6	0	code/user_management/apps.py
+8	0	code/user_management/models.py
+3	0	code/user_management/tests.py
+3	0	code/user_management/views.py
+2	0	migrate/migrate.sh
+
+*****
+1687b615d743e46c9bd156d89794c522fc20fedf
+8f63e854e29e76a127087d27f0a9f1ce69824c53
+Shinmen Takezō
+franco@FrancosiMacSSD.lan
+2020-12-21T14:35:22-03:00
+
+5	4	code/theproduct/jazzmin/jazzmin_settings.py
+5	0	code/theproduct/settings.py
+4	0	code/theproduct/static/css/thecustomer.css
+1	2	code/config/requirements.txt
+13	2	code/configuration/admin.py
+1	1	code/configuration/models.py
+
+*****
+8f63e854e29e76a127087d27f0a9f1ce69824c53
+ff53cd91a8906faa04e63331feb25216cb384150
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-18T15:34:59-03:00
+
+5	0	code/configuration/admin.py
+1	0	code/configuration/models.py
+
+*****
+4d1c8e40e36d51b1c0cbb0113430726e9f4e80ef
+a641b42aefc312b039cdd19659888d2adc74576d ff53cd91a8906faa04e63331feb25216cb384150
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-12-18T14:13:52+00:00
+
+*****
+ff53cd91a8906faa04e63331feb25216cb384150
+5a4b7b3713154a0b89d0214556eee78aa451e28d
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-18T09:41:19-03:00
+
+1	1	code/theproduct/jazzmin/jazzmin_settings.py
+1	1	code/theproduct/settings.py
+1	1	code/password_reset/models.py
+
+*****
+5a4b7b3713154a0b89d0214556eee78aa451e28d
+e100b0c2abdfe39c0c947c97ab476e82311b4c80
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-18T02:15:41-03:00
+
+13	18	code/theproduct/urls.py
+1	0	code/config/requirements.txt
+
+*****
+e100b0c2abdfe39c0c947c97ab476e82311b4c80
+86075384112dac318b0cbd97a0e993d73c59e78b
+Shinmen Takezō
+musashi.miyamoto@email.com
+2020-12-17T22:31:30-03:00
+
+6	0	README.md
+4	0	code/theproduct/settings.py
+33	1	code/theproduct/urls.py
+6	1	code/config/requirements.txt
+
+*****
+86075384112dac318b0cbd97a0e993d73c59e78b
+d5e2c83ee91814ba0e0849f49c9c37920ca4e346
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-17T19:19:19-03:00
+
+74	0	code/theproduct/templates/registration/password_reset_complete.html
+96	0	code/theproduct/templates/registration/password_reset_confirm.html
+76	0	code/theproduct/templates/registration/password_reset_done.html
+89	0	code/theproduct/templates/registration/password_reset_form.html
+2	3	code/password_reset/models.py
+
+*****
+d5e2c83ee91814ba0e0849f49c9c37920ca4e346
+a5288ec2afd1919526242cbd055a2294bc509636
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-17T18:04:14-03:00
+
+14	14	code/theproduct/settings.py
+130	0	code/theproduct/templates/admin/login.html
+3	40	code/theproduct/urls.py
+1	0	code/config/requirements.txt
+0	0	code/password_reset/__init__.py
+3	0	code/password_reset/admin.py
+5	0	code/password_reset/apps.py
+21	0	code/password_reset/models.py
+12	0	code/password_reset/serializers.py
+3	0	code/password_reset/tests.py
+6	0	code/password_reset/urls.py
+40	0	code/password_reset/views.py
+
+*****
+a5288ec2afd1919526242cbd055a2294bc509636
+37da6272f18565f9c5653c36c1def17a0b7c7c28
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-17T00:58:12-03:00
+
+9	4	code/configuration/admin.py
+17	2	code/configuration/models.py
+0	0	code/user/__init__.py
+0	21	code/user/admin.py
+0	5	code/user/apps.py
+0	23	code/user/models.py
+0	3	code/user/tests.py
+0	3	code/user/views.py
+
+*****
+37da6272f18565f9c5653c36c1def17a0b7c7c28
+3af8d015f1607c9b8daebfabdb4577c348a5d6f7
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-14T12:20:05-03:00
+
+12	2	code/theproduct/jazzmin/jazzmin_settings.py
+1	1	code/content_management/apps.py
+
+*****
+3af8d015f1607c9b8daebfabdb4577c348a5d6f7
+4c52ee4a57a0a81c7fbdfd459420c8f5baab17c7
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-14T11:59:14-03:00
+
+1	1	migrate/migrate.sh
+
+*****
+4c52ee4a57a0a81c7fbdfd459420c8f5baab17c7
+3d580cd5f6e5bb9b16f50752badd46de1458f00b 96eeeeb7a1719fc5cb9bb026043e445e61e1c910
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-14T11:57:20-03:00
+
+*****
+3d580cd5f6e5bb9b16f50752badd46de1458f00b
+cf38305d59cd91186743e8a3149d99d83a7b87f1
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-14T11:20:01-03:00
+
+3	0	code/theproduct/settings.py
+13	10	code/theproduct/urls.py
+
+*****
+96eeeeb7a1719fc5cb9bb026043e445e61e1c910
+c341fbcebded9d2e77d893e5d4df3ef04fd2de9c
+Shinmen Takezō
+musashi.miyamoto@email.com
+2020-12-14T10:58:01-03:00
+
+2	2	code/theproduct/templates/admin/base.html
+
+*****
+c341fbcebded9d2e77d893e5d4df3ef04fd2de9c
+f8c6f27bf0cfb14dcd77c330dcba930f1a140d53
+Shinmen Takezō
+musashi.miyamoto@email.com
+2020-12-14T12:14:53+00:00
+
+-	-	.DS_Store
+
+*****
+f8c6f27bf0cfb14dcd77c330dcba930f1a140d53
+ef364f811365d17848f7789b5d9cffffe7952960
+Shinmen Takezō
+musashi.miyamoto@email.com
+2020-12-14T09:14:12-03:00
+
+5	1	.gitignore
+
+*****
+ef364f811365d17848f7789b5d9cffffe7952960
+cf38305d59cd91186743e8a3149d99d83a7b87f1
+Shinmen Takezō
+musashi.miyamoto@email.com
+2020-12-14T08:50:33-03:00
+
+-	-	.DS_Store
+16	12	code/theproduct/jazzmin/jazzmin_settings.py
+16	3	code/theproduct/static/css/thecustomer.css
+
+*****
+cf38305d59cd91186743e8a3149d99d83a7b87f1
+7c4d68eebc8b0860dab2abcf346167a2c2f49c4f
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-11T17:39:44-03:00
+
+2	2	code/configuration/models.py
+
+*****
+7c4d68eebc8b0860dab2abcf346167a2c2f49c4f
+2142de440ea821645a6d6c78342007471b6e9bdd
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-11T15:56:51-03:00
+
+2	1	.gitignore
+1	1	Dockerfile
+0	22	code/address/admin.py
+0	5	code/address/apps.py
+0	20	code/address/models.py
+0	19	code/blog/admin.py
+0	5	code/blog/apps.py
+0	21	code/blog/models.py
+10	9	code/theproduct/settings.py
+2	2	code/theproduct/urls.py
+0	0	code/company/__init__.py
+0	14	code/company/admin.py
+0	5	code/company/apps.py
+0	11	code/company/models.py
+0	3	code/company/tests.py
+0	3	code/company/views.py
+1	0	code/config/requirements.txt
+0	0	code/{address => configuration}/__init__.py
+22	0	code/configuration/admin.py
+5	0	code/configuration/apps.py
+40	0	code/configuration/models.py
+0	0	code/{address => configuration}/tests.py
+0	0	code/{address => configuration}/views.py
+0	0	code/{blog => content_management}/__init__.py
+65	0	code/content_management/admin.py
+7	0	code/content_management/apps.py
+62	0	code/content_management/models.py
+0	0	code/{blog => content_management}/tests.py
+0	0	code/{blog => content_management}/views.py
+0	0	code/course/__init__.py
+0	19	code/course/admin.py
+0	5	code/course/apps.py
+0	22	code/course/models.py
+0	3	code/course/tests.py
+0	3	code/course/views.py
+0	0	code/feed/__init__.py
+0	19	code/feed/admin.py
+0	5	code/feed/apps.py
+0	22	code/feed/models.py
+0	3	code/feed/tests.py
+0	3	code/feed/views.py
+0	13	code/migrate.sh
+0	6	code/user/models.py
+0	0	code/wiki/__init__.py
+0	19	code/wiki/admin.py
+0	5	code/wiki/apps.py
+0	22	code/wiki/models.py
+0	3	code/wiki/tests.py
+0	3	code/wiki/views.py
+3	1	docker-compose.yml
+8	0	migrate/migrate.sh
+
+*****
+2142de440ea821645a6d6c78342007471b6e9bdd
+53f36460080812be4c82e5b1f7a732364e98b94c
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-08T10:56:54-03:00
+
+0	1	code/migrate.sh
+
+*****
+53f36460080812be4c82e5b1f7a732364e98b94c
+dcc85dde1bb642ab61855f555011d7bd601118f9
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-12-06T00:30:53+00:00
+
+1	1	code/theproduct/settings.py
+
+*****
+dcc85dde1bb642ab61855f555011d7bd601118f9
+b94a8ffbfe4a35192a519e8867baa850ccbf516e
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-12-04T22:34:50+00:00
+
+2	0	Dockerfile
+
+*****
+b94a8ffbfe4a35192a519e8867baa850ccbf516e
+c828815c7e17acb3fef5054178121b5004f88e16
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-12-04T20:16:50+00:00
+
+1	1	Dockerfile
+
+*****
+c828815c7e17acb3fef5054178121b5004f88e16
+43f413d2da01e70bc07af1ed7a86ffadd0d45e8e
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-12-04T20:14:02+00:00
+
+1	1	Dockerfile
+
+*****
+43f413d2da01e70bc07af1ed7a86ffadd0d45e8e
+5e157762fba3f6e59852a800925e5fb297adf669
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-12-04T20:08:57+00:00
+
+3	7	Dockerfile
+
+*****
+5e157762fba3f6e59852a800925e5fb297adf669
+142a655d4f9f7aa795114cdc48f2d0e10ec82c71
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-12-04T20:02:27+00:00
+
+4	1	Dockerfile
+
+*****
+142a655d4f9f7aa795114cdc48f2d0e10ec82c71
+5ee7e84e51234a432e38506f431809c6ffbc3814
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-12-04T19:57:43+00:00
+
+2	1	Dockerfile
+
+*****
+5ee7e84e51234a432e38506f431809c6ffbc3814
+40e33a42b8d6459299d7e1c3d6c21074a0607427
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-12-04T19:56:32+00:00
+
+1	1	Dockerfile
+
+*****
+40e33a42b8d6459299d7e1c3d6c21074a0607427
+9af47eaa8d2064cb0c8bd3c4b754cb0220fc80b4 13a7fd3eaa390734f6a78bc4aac75f9cc5ded4db
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-04T16:55:49-03:00
+
+*****
+13a7fd3eaa390734f6a78bc4aac75f9cc5ded4db
+e17dbffb7381ed84aab83c939958119cad313bc5
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-04T16:55:06-03:00
+
+0	5	code/theproduct/jazzmin/jazzmin_settings.py
+0	0	code/{config => }/migrate.sh
+
+*****
+9af47eaa8d2064cb0c8bd3c4b754cb0220fc80b4
+08044b9eafe96959fb73ad60037854db988909f4
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-12-04T19:48:51+00:00
+
+3	1	Dockerfile
+
+*****
+08044b9eafe96959fb73ad60037854db988909f4
+e17dbffb7381ed84aab83c939958119cad313bc5
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-12-04T19:37:07+00:00
+
+2	2	Dockerfile
+
+*****
+e17dbffb7381ed84aab83c939958119cad313bc5
+ae299269507690e3e18a39478c47d8d7ea2d6c35
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-03T17:56:28-03:00
+
+0	1	Dockerfile
+
+*****
+ae299269507690e3e18a39478c47d8d7ea2d6c35
+3585e9e9fa5376bdd4059fca191e6cd70c48005d
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-03T14:33:22-03:00
+
+1	1	code/config/local_settings.py
+
+*****
+3585e9e9fa5376bdd4059fca191e6cd70c48005d
+92655389323327e4628060e42485635b26a32666 cbccd3f54d3771ed91d58606eef231b7edd0ddf5
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-03T14:26:31-03:00
+
+*****
+cbccd3f54d3771ed91d58606eef231b7edd0ddf5
+e99e385b430fb8998074592178869eed6810be7b
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-03T14:24:19-03:00
+
+0	0	code/address/__init__.py
+22	0	code/address/admin.py
+5	0	code/address/apps.py
+20	0	code/address/models.py
+3	0	code/address/tests.py
+3	0	code/address/views.py
+0	1	code/blog/admin.py
+4	4	code/theproduct/jazzmin/jazzmin_settings.py
+3	1	code/theproduct/settings.py
+0	0	code/company/__init__.py
+14	0	code/company/admin.py
+5	0	code/company/apps.py
+11	0	code/company/models.py
+3	0	code/company/tests.py
+3	0	code/company/views.py
+3	0	code/config/migrate.sh
+0	0	code/user/__init__.py
+21	0	code/user/admin.py
+5	0	code/user/apps.py
+29	0	code/user/models.py
+3	0	code/user/tests.py
+3	0	code/user/views.py
+3	2	code/wiki/models.py
+
+*****
+92655389323327e4628060e42485635b26a32666
+aa10348b69272ea8ff46eac097940b41adb8c350 28e03ff6a30db17b13f9981f2947179bd056713d
+Shinmen Takezō
+musashi.miyamoto@email.com
+2020-12-03T12:56:48-03:00
+
+*****
+aa10348b69272ea8ff46eac097940b41adb8c350
+1843198d870e7cf15a16e8d1b3d00dcc66d3ee2f 3e264e033973f8d4d9e9625358c905efcda28d18
+Shinmen Takezō
+musashi.miyamoto@email.com
+2020-12-03T12:55:26-03:00
+
+*****
+28e03ff6a30db17b13f9981f2947179bd056713d
+1843198d870e7cf15a16e8d1b3d00dcc66d3ee2f
+Shinmen Takezō
+franco@FrancosiMacSSD.lan
+2020-12-03T12:47:23-03:00
+
+1	0	code/theproduct/static/css/thecustomer.css
+
+*****
+1843198d870e7cf15a16e8d1b3d00dcc66d3ee2f
+9697c7d49f4b6aecbea0f4f049e42028e3747ea5
+Shinmen Takezō
+franco@FrancosiMacSSD.lan
+2020-12-03T12:30:03-03:00
+
+1	0	code/theproduct/static/css/thecustomer.css
+
+*****
+9697c7d49f4b6aecbea0f4f049e42028e3747ea5
+e99e385b430fb8998074592178869eed6810be7b
+Shinmen Takezō
+franco@FrancosiMacSSD.lan
+2020-12-03T11:34:16-03:00
+
+6	3	code/theproduct/jazzmin/jazzmin_settings.py
+50	1	code/theproduct/static/css/thecustomer.css
+
+*****
+3e264e033973f8d4d9e9625358c905efcda28d18
+e99e385b430fb8998074592178869eed6810be7b
+Shinmen Takezō
+musashi.miyamoto@email.com
+2020-12-03T14:33:11+00:00
+
+50	1	code/theproduct/static/css/thecustomer.css
+
+*****
+e99e385b430fb8998074592178869eed6810be7b
+af856264c2308c47110e3e066ba2d628863551d8
+Eric Arthur Blair
+george.orwell@email.com
+2020-12-02T11:16:59-03:00
+
+2	1	.gitignore
+2	1	Dockerfile
+0	0	code/blog/__init__.py
+20	0	code/blog/admin.py
+5	0	code/blog/apps.py
+21	0	code/blog/models.py
+3	0	code/blog/tests.py
+3	0	code/blog/views.py
+154	0	code/theproduct/jazzmin/jazzmin_settings.py
+26	6	code/theproduct/settings.py
+3	0	code/theproduct/static/css/thecustomer.css
+-	-	code/theproduct/static/img/thecustomer-logo.png
+371	0	code/theproduct/templates/admin/base.html
+0	2	code/config/local_settings.py
+11	0	code/config/migrate.sh
+0	0	code/{theproduct/requirements => config}/requirements.txt
+0	0	code/course/__init__.py
+19	0	code/course/admin.py
+5	0	code/course/apps.py
+22	0	code/course/models.py
+3	0	code/course/tests.py
+3	0	code/course/views.py
+0	0	code/feed/__init__.py
+19	0	code/feed/admin.py
+5	0	code/feed/apps.py
+22	0	code/feed/models.py
+3	0	code/feed/tests.py
+3	0	code/feed/views.py
+0	0	code/wiki/__init__.py
+19	0	code/wiki/admin.py
+5	0	code/wiki/apps.py
+21	0	code/wiki/models.py
+3	0	code/wiki/tests.py
+3	0	code/wiki/views.py
+2	4	docker-compose.yml
+
+*****
+af856264c2308c47110e3e066ba2d628863551d8
+185e02b4845e79d27a2fd3243d32fde713a4d133
+Shinmen Takezō
+musashi.miyamoto@email.com
+2020-12-01T13:18:57+00:00
+
+1	1	code/config/local_settings.py
+
+*****
+185e02b4845e79d27a2fd3243d32fde713a4d133
+ff20aaa571e013f0eed4bfeb001dc5389492926d
+Shinmen Takezō
+musashi.miyamoto@email.com
+2020-12-01T13:15:06+00:00
+
+1	1	code/config/local_settings.py
+
+*****
+ff20aaa571e013f0eed4bfeb001dc5389492926d
+47e14f77637426974b4e81bc7b8a762033f0d269
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-11-30T22:41:07+00:00
+
+2	1	Dockerfile
+
+*****
+47e14f77637426974b4e81bc7b8a762033f0d269
+fed60b7832c1a5b74af43bc53988f30c4e082c8b
+Ruy Barbosa de Oliveira
+ruy.barbosa@email.com
+2020-11-30T22:36:55+00:00
+
+3	2	Dockerfile
+
+*****
+fed60b7832c1a5b74af43bc53988f30c4e082c8b
+f587b11f3dc047e10c2e402ce32edfe0fb2a4ab2
+Eric Arthur Blair
+george.orwell@email.com
+2020-11-27T10:51:36-03:00
+
+1	0	code/theproduct/requirements/requirements.txt
+1	0	code/theproduct/settings.py
+
+*****
+f587b11f3dc047e10c2e402ce32edfe0fb2a4ab2
+a641b42aefc312b039cdd19659888d2adc74576d
+Eric Arthur Blair
+george.orwell@email.com
+2020-11-25T14:19:01-03:00
+
+7	0	.gitignore
+21	0	.gitlab-ci.yml
+27	0	Dockerfile
+0	0	code/theproduct/__init__.py
+16	0	code/theproduct/asgi.py
+48	0	code/theproduct/requirements/requirements.txt
+144	0	code/theproduct/settings.py
+52	0	code/theproduct/urls.py
+16	0	code/theproduct/wsgi.py
+23	0	code/config/local_settings.py
+22	0	code/manage.py
+22	0	docker-compose.yml
+6	0	entrypoint/entrypoint.sh
+
+*****
+a641b42aefc312b039cdd19659888d2adc74576d
+
+William Shakespeare
+william.shakespeare@email.com
+2020-11-25T16:09:12+00:00
+
+1	0	README.md

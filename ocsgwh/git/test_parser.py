@@ -118,8 +118,9 @@ class TestGitCommitParser(unittest.TestCase):
         self.assertEqual(p._parse_parent(
             'ff53cd91a8906faa04e63331feb25216cb384150 e08b051a6305e132d6a5d0002c5f62f701b5cb43'),
             ['ff53cd91a8906faa04e63331feb25216cb384150', 'e08b051a6305e132d6a5d0002c5f62f701b5cb43'])
-        self.assertRaises(ValueError, p._parse_parent,
-                          '')
+        self.assertEqual(p._parse_parent(
+            ''),
+            [])
         self.assertRaises(ValueError, p._parse_parent,
                           'ff53cd91a8906faa04e63331feb25216cb384150  e08b051a6305e132d6a5d0002c5f62f701b5cb43')
         self.assertRaises(ValueError, p._parse_parent,
@@ -130,6 +131,8 @@ class TestGitCommitParser(unittest.TestCase):
                           'ff53cd91a8906faa 4e63331feb25216cb384150  e08b051a6305e132d6a5d0002c5f62f701b5cb43')
         self.assertRaises(ValueError, p._parse_parent,
                           'ff53cd91a8906faa04e63331feb25216cb384150  e08b051a6305e132d6a5d0002c5f62 701b5cb43')
+        self.assertRaises(ValueError, p._parse_parent,
+                          'ff53cd91a8906faa04e63331feb25216cb384150 e08b051a6305e132d6a5d0002c5f62f701b5cb43 e08b051a6305e132d6a5d0002c5f62f701b5cb43')
 
     def test_parse_name(self):
         p = GitCommitParser()
@@ -264,6 +267,46 @@ class TestGitCommitParser(unittest.TestCase):
                 ''
             ]
         )
+
+
+class TestGitLogParser(unittest.TestCase):
+
+    def load_sample(self, file: str):
+        file_name = SAMPLE_DIR / file
+        with open(file_name, 'r', encoding='utf-8') as inp:
+            return inp.read()
+
+    def test_run(self):
+        src = self.load_sample('log-sample.txt')
+        p = GitLogParser()
+
+        self.assertTrue(p.run(src))
+        ret = p.result
+        self.assertEqual(len(ret), 67)
+
+        # Testing a few entries
+        self.assertEqual(ret[3].id, 'dcacc4020c4c0c21ea7c3753f6cfb7e29eb12fc2')
+        self.assertEqual(ret[66].author.email, 'william.shakespeare@email.com')
+
+    def test_run_ignore_bad(self):
+        src = self.load_sample('log-sample-defect.txt')
+        p = GitLogParser()
+
+        self.assertTrue(p.run(src))
+        ret = p.result
+        self.assertEqual(len(ret), 61)
+
+        # Testing a few entries
+        self.assertEqual(ret[0].id, '4e16aa58158dc51732408aee2832941be02ec86d')
+
+    @unittest.skipUnless((ROOT_DIR / '.git').is_dir(), 'The root of the project is not a git repository.')
+    def test_run_git(self):
+        # self.fail()
+
+        p = GitLogParser()
+        self.assertTrue(p.run_git(ROOT_DIR))
+        ret = p.result
+        self.assertGreaterEqual(len(ret), 1)
 
 
 if __name__ == '__main__':

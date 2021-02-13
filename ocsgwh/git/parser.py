@@ -114,12 +114,12 @@ class GitCommitParser(BaseGitCommitParser):
 
     def _parse_parent(self, parents: str):
         ret = []
-        for id in parents.split(' '):
-            ret.append(self._parse_id(id))
-        if ret:
-            return ret
-        else:
-            raise ValueError('Invalid parent format.')
+        if parents:
+            for id in parents.split(' '):
+                ret.append(self._parse_id(id))
+            if len(ret) > 2:
+                raise ValueError('Invalid parent format.')
+        return ret
 
     def _parse_name(self, name: str):
         name = name.strip()
@@ -147,17 +147,19 @@ class GitCommitParser(BaseGitCommitParser):
 
 class GitLogParser:
 
-    def __init__(self, commit_parser: BaseGitCommitParser) -> None:
+    def __init__(self, commit_parser: BaseGitCommitParser = GitCommitParser()) -> None:
         self._result = []
         self._commit_parser = commit_parser
+        self._count = 0
 
     def _process_commit(self, commit: list) -> GitCommit:
+        self._count += 1
         if commit is not None and commit:
             try:
                 c = self._commit_parser.parse(commit)
                 self._result.append(c)
             except ValueError:
-                LOGGER.warn(f'Invalid entry ${commit}.')
+                LOGGER.warning(f'Invalid entry {self._count}: {commit}.')
 
     def _split_commit(self, source: str) -> None:
         commit = list()

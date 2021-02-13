@@ -223,4 +223,14 @@ class GitCommit:
 
     @property
     def merge(self) -> bool:
+        """
+        Returns true if this commit is a merge.
+        """
         return len(self.parents) > 1
+
+    @property
+    def root(self) -> bool:
+        """
+        Returns true if this commit is the root of the repository.
+        """
+        return not self.parents
