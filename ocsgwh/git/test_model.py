@@ -131,6 +131,51 @@ class TestGitDiffBuilder(unittest.TestCase):
         self.assertEqual(d[1].added, 2)
         self.assertEqual(d[1].deleted, 4)
 
+    def test_add_diff_entry(self):
+        b = GitDiffBuilder()
+        d1 = GitDiffEntry('file1', 1, 2)
+        d2 = GitDiffEntry('file0', 3, 5)
+
+        b.add_diff_entry(d1)
+        d = b.build()
+        self.assertEqual(len(d), 1)
+        self.assertEqual(d[0].file_name, 'file1')
+        self.assertEqual(d[0].added, 1)
+        self.assertEqual(d[0].deleted, 2)
+
+        b.add_diff_entry(d1)
+        d = b.build()
+        self.assertEqual(len(d), 1)
+        self.assertEqual(d[0].file_name, 'file1')
+        self.assertEqual(d[0].added, 2)
+        self.assertEqual(d[0].deleted, 4)
+
+        b.add_diff_entry(d2)
+        d = b.build()
+        self.assertEqual(len(d), 2)
+        self.assertEqual(d[0].file_name, 'file0')
+        self.assertEqual(d[0].added, 3)
+        self.assertEqual(d[0].deleted, 5)
+        self.assertEqual(d[1].file_name, 'file1')
+        self.assertEqual(d[1].added, 2)
+        self.assertEqual(d[1].deleted, 4)
+
+    def test_add_diff(self):
+        b = GitDiffBuilder()
+
+        b.add_entry('file0', 1, 2).add_entry('file1', 3, 4)
+        d1 = b.build()
+        b.add_diff(d1)
+        d2 = b.build()
+
+        self.assertEqual(len(d2), 2)
+        self.assertEqual(d2[0].file_name, 'file0')
+        self.assertEqual(d2[0].added, 2)
+        self.assertEqual(d2[0].deleted, 4)
+        self.assertEqual(d2[1].file_name, 'file1')
+        self.assertEqual(d2[1].added, 6)
+        self.assertEqual(d2[1].deleted, 8)
+
 
 if __name__ == '__main__':
     unittest.main()

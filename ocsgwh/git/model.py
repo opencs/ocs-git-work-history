@@ -127,9 +127,21 @@ class GitDiffBuilder:
         self._entries = dict()
 
     def reset(self):
+        """
+        Resets this builder. It is equivalent to create a new instance.
+
+        Returns: self.
+        """
         self._entries.clear()
+        return self
 
     def add_entry(self, file_name: str, added: int, deleted: int) -> object:
+        """
+        Adds a diff entry. It will update existing file statistics if it is
+        already registered.
+
+        Returns: self.
+        """
         if file_name in self._entries:
             entry = self._entries[file_name]
             entry.added += added
@@ -142,14 +154,32 @@ class GitDiffBuilder:
         return self
 
     def add_diff_entry(self, entry: GitDiffEntry) -> object:
+        """
+        Adds a diff entry but uses a ``GitDiffEntry`` as its input.
+
+        Returns: self.
+        """
         return self.add_entry(entry.file_name, entry.added, entry.deleted)
 
     def add_diff(self, diff: GitDiff) -> object:
+        """
+        Adds all entries inside another ``GitDiff`` instance. It is useful to
+        merge 2 or more ``GitDiff`` instances.
+
+        Returns: self.
+        """
         for entry in diff:
             self.add_diff_entry(entry)
         return self
 
     def build(self) -> GitDiff:
+        """
+        Builds a new ``GitDiff`` instance based on the current state of 
+        this builder.
+
+        It is important to notice that calls to this method doesn't reset
+        its internal state thus multiple clones
+        """
         entries = []
         files = list(self._entries)
         files.sort()
