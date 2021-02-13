@@ -47,133 +47,89 @@ class TestGitDiffEntry(unittest.TestCase):
         self.assertEqual(d.deleted, 2)
         self.assertEqual(d.changed, 3)
 
-    def test_same(self):
-        d1 = GitDiffEntry('file', 1, 2)
-        d2 = GitDiffEntry('file', 3, 4)
-        d3 = GitDiffEntry('file1', 1, 2)
+    def test_eq(self):
+        d1 = GitDiffEntry('file1', 1, 2)
+        d2 = GitDiffEntry('file1', 1, 2)
+        d3 = GitDiffEntry('file2', 1, 2)
+        d4 = GitDiffEntry('file1', 2, 2)
+        d5 = GitDiffEntry('file1', 1, 3)
 
-        self.assertTrue(d1.same(d1))
-        self.assertTrue(d1.same(d2))
-        self.assertTrue(d2.same(d1))
-        self.assertFalse(d1.same(d3))
-        self.assertFalse(d3.same(d1))
-
-    def test_merge(self):
-        d1 = GitDiffEntry('file', 1, 2)
-        d2 = GitDiffEntry('file', 3, 4)
-        d3 = d1.merge(d2)
-
-        self.assertEqual(d3.file_name, d1.file_name)
-        self.assertEqual(d3.added, d1.added + d2.added)
-        self.assertEqual(d3.deleted, d1.deleted + d2.deleted)
-
-        d4 = GitDiffEntry('file1', 3, 4)
-        self.assertRaises(ValueError, d1.merge, d4)
+        self.assertEqual(d1, d1)
+        self.assertEqual(d1, d2)
+        self.assertEqual(d2, d1)
+        self.assertNotEqual(d1, d3)
+        self.assertNotEqual(d1, d4)
+        self.assertNotEqual(d1, d5)
 
 
 class TestGitDiff(unittest.TestCase):
 
+    def create_sample_entries(n: int):
+        l = []
+        for i in range(n):
+            l.append(GitDiffEntry('file' + str(i), i + 10, i))
+        return l
+
     def test_constructor(self):
-        d = GitDiff()
+        d = GitDiff([])
         self.assertEqual(d.added, 0)
         self.assertEqual(d.deleted, 0)
-        self.assertEqual(d.changed, 0)
+        self.assertEqual(d.changed, d.added + d.deleted)
         self.assertEqual(len(d), 0)
         self.assertFalse(d)
 
-    def test_add(self):
-        d = GitDiff()
-
-        d.add(GitDiffEntry('file1', 1, 2))
-        self.assertEqual(d.added, 1)
-        self.assertEqual(d.deleted, 2)
+        d = GitDiff(TestGitDiff.create_sample_entries(5))
+        self.assertEqual(d.added, 10 + 50)
+        self.assertEqual(d.deleted, 10)
         self.assertEqual(d.changed, d.added + d.deleted)
-        self.assertEqual(len(d), 1)
+        self.assertEqual(len(d), 5)
         self.assertTrue(d)
 
-        e = d['file1']
-        self.assertEqual(e.file_name, 'file1')
-        self.assertEqual(e.added, 1)
-        self.assertEqual(e.deleted, 2)
+    def test_access(self):
+        l = TestGitDiff.create_sample_entries(5)
+        d = GitDiff(l)
 
-        d.add(GitDiffEntry('file1', 3, 4))
-        self.assertEqual(d.added, 1 + 3)
-        self.assertEqual(d.deleted, 2 + 4)
-        self.assertEqual(d.changed, d.added + d.deleted)
+        for i in range(len(d)):
+            self.assertEqual(d[i], l[i])
+
+        li = iter(l)
+        for i in d:
+            self.assertEqual(i, next(li))
+
+
+class TestGitDiffBuilder(unittest.TestCase):
+
+    def test_empty(self):
+        b = GitDiffBuilder()
+        d = b.build()
+        self.assertFalse(d)
+
+    def test_add_entry(self):
+        b = GitDiffBuilder()
+
+        b.add_entry('file1', 1, 2)
+        d = b.build()
         self.assertEqual(len(d), 1)
-        self.assertTrue(d)
+        self.assertEqual(d[0].file_name, 'file1')
+        self.assertEqual(d[0].added, 1)
+        self.assertEqual(d[0].deleted, 2)
 
-        e = d['file1']
-        self.assertEqual(e.file_name, 'file1')
-        self.assertEqual(e.added, 1 + 3)
-        self.assertEqual(e.deleted, 2 + 4)
+        b.add_entry('file1', 1, 2)
+        d = b.build()
+        self.assertEqual(len(d), 1)
+        self.assertEqual(d[0].file_name, 'file1')
+        self.assertEqual(d[0].added, 2)
+        self.assertEqual(d[0].deleted, 4)
 
-        d.add(GitDiffEntry('file2', 5, 6))
-        self.assertEqual(d.added, 1 + 3 + 5)
-        self.assertEqual(d.deleted, 2 + 4 + 6)
-        self.assertEqual(d.changed, d.added + d.deleted)
+        b.add_entry('file0', 3, 5)
+        d = b.build()
         self.assertEqual(len(d), 2)
-        self.assertTrue(d)
-
-        e = d['file1']
-        self.assertEqual(e.file_name, 'file1')
-        self.assertEqual(e.added, 1 + 3)
-        self.assertEqual(e.deleted, 2 + 4)
-
-        e = d['file2']
-        self.assertEqual(e.file_name, 'file2')
-        self.assertEqual(e.added, 5)
-        self.assertEqual(e.deleted, 6)
-
-    def test_iter(self):
-        d = GitDiff()
-        d.add(GitDiffEntry('file1', 1, 2))
-        d.add(GitDiffEntry('file2', 3, 4))
-
-        files = set()
-        for e in d:
-            self.assertFalse(e.file_name in files)
-            files.add(e.file_name)
-        self.assertEqual(len(files), 2)
-        self.assertTrue('file1' in files)
-        self.assertTrue('file2' in files)
-
-    def test_merge(self):
-        d1 = GitDiff()
-        d1.add(GitDiffEntry('file1', 1, 2))
-        d1.add(GitDiffEntry('file2', 3, 4))
-
-        d2 = GitDiff()
-        d2.add(GitDiffEntry('file1', 5, 6))
-        d2.add(GitDiffEntry('file3', 7, 8))
-
-        d3 = d1.merge(d2)
-        self.assertEquals(len(d1), 2)
-        e = d1['file1']
-        self.assertEqual(e.added, 1)
-        self.assertEqual(e.deleted, 2)
-        e = d1['file2']
-        self.assertEqual(e.added, 3)
-        self.assertEqual(e.deleted, 4)
-
-        self.assertEquals(len(d2), 2)
-        e = d2['file1']
-        self.assertEqual(e.added, 5)
-        self.assertEqual(e.deleted, 6)
-        e = d2['file3']
-        self.assertEqual(e.added, 7)
-        self.assertEqual(e.deleted, 8)
-
-        self.assertEquals(len(d3), 3)
-        e = d3['file1']
-        self.assertEqual(e.added, 1 + 5)
-        self.assertEqual(e.deleted, 2 + 6)
-        e = d3['file2']
-        self.assertEqual(e.added, 3)
-        self.assertEqual(e.deleted, 4)
-        e = d3['file3']
-        self.assertEqual(e.added, 7)
-        self.assertEqual(e.deleted, 8)
+        self.assertEqual(d[0].file_name, 'file0')
+        self.assertEqual(d[0].added, 3)
+        self.assertEqual(d[0].deleted, 5)
+        self.assertEqual(d[1].file_name, 'file1')
+        self.assertEqual(d[1].added, 2)
+        self.assertEqual(d[1].deleted, 4)
 
 
 if __name__ == '__main__':

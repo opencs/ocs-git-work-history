@@ -24,6 +24,8 @@ class GitAuthor:
     email (the actual key) and a name.
 
     Two authors are considered the same if and only if their emails are the same.
+
+    Instances of this class are expected to be immutable.
     """
 
     def __init__(self, email: str, name: str) -> None:
@@ -43,6 +45,13 @@ class GitAuthor:
 
 
 class GitDiffEntry:
+    """
+    This class implements a Git diff entry. It contains the name of the
+    file, the number of additons and deletions.
+
+    Instances of this class are expected to be immutable.
+    """
+
     def __init__(self, file_name: str, added: int, deleted: int) -> None:
         self._file_name = file_name
         self._added = added
@@ -64,31 +73,23 @@ class GitDiffEntry:
     def changed(self) -> int:
         return self.added + self.deleted
 
-    def same(self, other):
-        return isinstance(other, GitDiffEntry) and self.file_name == other.file_name
-
-    def merge(self, other):
-        if self.same(other):
-            return GitDiffEntry(self.file_name, self.added + other.added, self.deleted + other.deleted)
-        else:
-            raise ValueError(
-                "The file names don't match.")
+    def __eq__(self, o: object) -> bool:
+        return self.file_name == o.file_name and self.added == o.added and self.deleted == o.deleted
 
 
 class GitDiff:
-    def __init__(self) -> None:
-        self._entries = dict()
+    """
+    This class implements the diff set of a given commit. It contains 0 or more git diff
+    entries.
+    """
+
+    def __init__(self, entries: list) -> None:
+        self._entries = list(entries)
         self._added = 0
         self._deleted = 0
-
-    def add(self, entry: GitDiffEntry):
-        self._added = self._added + entry.added
-        self._deleted = self._deleted + entry.deleted
-        if not entry.file_name in self._entries:
-            self._entries[entry.file_name] = entry
-        else:
-            prev = self._entries[entry.file_name]
-            self._entries[entry.file_name] = prev.merge(entry)
+        for entry in entries:
+            self._added += entry.added
+            self._deleted += entry.deleted
 
     @property
     def added(self) -> int:
@@ -109,21 +110,60 @@ class GitDiff:
         return len(self._entries)
 
     def __iter__(self):
-        return iter(self._entries.values())
+        return iter(self._entries)
 
-    def __getitem__(self, file_name: str) -> GitDiffEntry:
-        return self._entries[file_name]
+    def __getitem__(self, index: int) -> GitDiffEntry:
+        return self._entries[index]
 
-    def merge(self, other):
-        ret = GitDiff()
-        for d in self:
-            ret.add(d)
-        for d in other:
-            ret.add(d)
-        return ret
+
+class GitDiffBuilder:
+    """
+    This class is a builder for ``GitDiff`` instances.
+    """
+    class Accumulator:
+        __slots__ = ('added', 'deleted')
+
+    def __init__(self) -> None:
+        self._entries = dict()
+
+    def reset(self):
+        self._entries.clear()
+
+    def add_entry(self, file_name: str, added: int, deleted: int) -> object:
+        if file_name in self._entries:
+            entry = self._entries[file_name]
+            entry.added += added
+            entry.deleted += deleted
+        else:
+            entry = GitDiffBuilder.Accumulator()
+            entry.added = added
+            entry.deleted = deleted
+            self._entries[file_name] = entry
+        return self
+
+    def add_diff_entry(self, entry: GitDiffEntry) -> object:
+        return self.add_entry(entry.file_name, entry.added, entry.deleted)
+
+    def add_diff(self, diff: GitDiff) -> object:
+        for entry in diff:
+            self.add_diff_entry(entry)
+        return self
+
+    def build(self) -> GitDiff:
+        entries = []
+        files = list(self._entries)
+        files.sort()
+        for f in files:
+            entry = self._entries[f]
+            entries.append(GitDiffEntry(f, entry.added, entry.deleted))
+        return GitDiff(entries)
 
 
 class GitCommit:
+    """
+    This class implements the complete Git commit information.
+    """
+
     def __init__(self, id, parents: list, timestamp: datetime, author: GitAuthor, diff: GitDiff) -> None:
         self._id = id
         self._parents = parents
@@ -153,4 +193,4 @@ class GitCommit:
 
     @property
     def merge(self) -> bool:
-        return len(self.parents) != 1
+        return len(self.parents) > 1
