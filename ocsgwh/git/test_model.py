@@ -27,16 +27,21 @@ class TestGitAuthor(unittest.TestCase):
         self.assertEqual(a.email, 'email')
         self.assertEqual(a.name, 'name')
 
-    def test_same(self):
+    def test_equal(self):
         a1 = GitAuthor('email1', 'name1')
-        a2 = GitAuthor('email1', 'name2')
-        a3 = GitAuthor('email2', 'name1')
+        a2 = GitAuthor('email1', 'name1')
+        a3 = GitAuthor('email3', 'name2')
 
-        self.assertTrue(a1.same(a1))
-        self.assertTrue(a1.same(a2))
-        self.assertTrue(a2.same(a1))
-        self.assertFalse(a1.same(a3))
-        self.assertFalse(a3.same(a1))
+        self.assertEqual(a1, a1)
+        self.assertEqual(a1, a2)
+        self.assertEqual(a2, a1)
+        self.assertNotEqual(a1, a3)
+
+    def test_hash(self):
+        a1 = GitAuthor('email1', 'name1')
+        a2 = GitAuthor('email1', 'name1')
+
+        self.assertEqual(hash(a1), hash(a2))
 
 
 class TestGitDiffEntry(unittest.TestCase):
@@ -248,6 +253,8 @@ class TestGitLog(unittest.TestCase):
             self.assertGreaterEqual(t, last_date)
             last_date = t
 
+        print(l.authors)
+
     def test_by_type(self):
         src = GitLog(get_sample_log())
 
@@ -259,11 +266,12 @@ class TestGitLog(unittest.TestCase):
     def test_by_author(self):
         src = GitLog(get_sample_log())
 
-        for a in src.authors:
-            l = src.by_author(a.email)
-            self.assertEqual(l.authors, [a])
-            for c in l:
-                self.assertEqual(c.author.email, a.email)
+        for an in src.authors:
+            for a in an.authors:
+                l = src.by_author(a)
+                #self.assertEqual(l.authors, [a])
+                for c in l:
+                    self.assertEqual(c.author, a)
 
     def test_by_date(self):
         src = GitLog(get_sample_log())

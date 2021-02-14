@@ -45,7 +45,7 @@ def create_empty_histogram(start_date: date, end_date: date, value_class):
     """
     This class creates an empty histogram with a certain number of days.
     The parameter start_date: is the first day of the histogram, count is
-    the number of days and value_class is the class that will hold the 
+    the number of days and value_class is the class that will hold the
     value (e.g.: DiffReport).
     """
     ret = OrderedDict()
@@ -115,3 +115,20 @@ class DiffHistogramBuilder (BaseHistogramBuilder):
     def update_entry(self, commit: GitCommit, current_value: DiffReport) -> DiffReport:
         current_value.update_with_diff(commit.diff)
         return current_value
+
+
+def create_author_diff_report(log: GitLog) -> list:
+    """
+    Creates a diff report for each user in the log. It returns a list of
+    """
+    tmp = {}
+    for a in log.authors:
+        tmp[a.email] = GitDiffBuilder()
+
+    for commit in log:
+        tmp[commit.author.email].add_diff(commit.diff)
+
+    ret = []
+    for a in log.authors:
+        ret.append((a, tmp[a.email].build()))
+    return ret

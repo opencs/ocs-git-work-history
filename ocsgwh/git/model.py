@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
+from functools import total_ordering
 from datetime import datetime, date
 from enum import Enum, auto
 
@@ -22,16 +23,15 @@ from enum import Enum, auto
 class GitAuthor:
     """
     This class implements a immutable Git author. It is always composed by an
-    email (the actual key) and a name.
+    email and a name.
 
-    Two authors are considered the same if and only if their emails are the same.
-
-    Instances of this class are expected to be immutable.
+    Instances of this class are immutable
     """
 
     def __init__(self, email: str, name: str) -> None:
         self._email = email
         self._name = name
+        self._rep = f'{self.name} <{self.email}>'
 
     @property
     def name(self) -> str:
@@ -41,14 +41,17 @@ class GitAuthor:
     def email(self) -> str:
         return self._email
 
-    def same(self, o: object) -> bool:
-        return self._email == o._email
-
     def __str__(self) -> str:
-        return f'{self.name} <{self.email}>'
+        return self._rep
 
     def __repr__(self) -> str:
         return str(self)
+
+    def __hash__(self) -> int:
+        return hash(self._rep)
+
+    def __eq__(self, o: object) -> bool:
+        return self._rep == o._rep
 
 
 class GitDiffEntry:
@@ -183,7 +186,7 @@ class GitDiffBuilder:
 
     def build(self) -> GitDiff:
         """
-        Builds a new ``GitDiff`` instance based on the current state of 
+        Builds a new ``GitDiff`` instance based on the current state of
         this builder.
 
         It is important to notice that calls to this method doesn't reset
@@ -250,6 +253,52 @@ class GitCommit:
             GitCommitType.MERGE)[min(len(self.parents), 2)]
 
 
+@total_ordering
+class GitAuthorName:
+
+    @staticmethod
+    def normalize_name(name: str):
+        return name.capitalize()
+
+    def __init__(self, author: GitAuthor) -> None:
+        self._name = author.name
+        self._normalized = GitAuthorName.normalize_name(author.name)
+        self._authors = set()
+        self._authors.add(author)
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def authors(self) -> set:
+        return self._authors
+
+    @property
+    def normalized(self):
+        return self._normalized
+
+    def same_name(self, name: str) -> bool:
+        return self.normalized == GitAuthorName.normalize_name(name)
+
+    def same_author(self, author: GitAuthor):
+        return author in self.authors
+
+    def add_author(self, author: GitAuthor):
+        if not self.same_name(author.name):
+            raise ValueError(f'{self.name} does not match {author.name}')
+        self._authors.add(author)
+
+    def __eq__(self, o: object) -> bool:
+        return self.normalized == o.normalized
+
+    def __hash__(self) -> int:
+        return hash(self.normailzed)
+
+    def __lt__(self, o: object):
+        return self.normalized < o.normalized
+
+
 class GitLog:
     """
     This class implements a Git log. It gets a list of ``GitCommit``
@@ -267,9 +316,13 @@ class GitLog:
         self._commits.sort(key=lambda x: x.timestamp)
         authors = {}
         for c in self._commits:
-            authors[c.author.email] = c.author
+            name = GitAuthorName.normalize_name(c.author.name)
+            if name in authors:
+                authors[name].add_author(c.author)
+            else:
+                authors[name] = GitAuthorName(c.author)
         self.authors = list(authors.values())
-        self.authors.sort(key=lambda x: x.email)
+        self.authors.sort()
 
     def __len__(self) -> int:
         return len(self._commits)
@@ -283,11 +336,11 @@ class GitLog:
     def __getitem__(self, index: int) -> GitCommit:
         return self._commits[index]
 
-    @property
+    @ property
     def min_date(self) -> datetime:
         return self[0].timestamp
 
-    @property
+    @ property
     def max_date(self) -> datetime:
         return self[-1].timestamp
 
@@ -297,11 +350,17 @@ class GitLog:
         """
         return GitLog([c for c in self._commits if c.commit_type == commit_type])
 
-    def by_author(self, author_email: str):
+    def by_author(self, author: GitAuthor):
         """
         Filters all commits from a given user.
         """
-        return GitLog([c for c in self._commits if c.author.email == author_email])
+        return GitLog([c for c in self._commits if c.author == author])
+
+    def by_author_name(self, author: GitAuthorName):
+        """
+        Filters all commits from a given user.
+        """
+        return GitLog([c for c in self._commits if author.same_author(c.author)])
 
     def by_date(self, start_date: date, end_date: date):
         """
