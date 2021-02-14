@@ -18,6 +18,7 @@
 from functools import total_ordering
 from datetime import datetime, date
 from enum import Enum, auto
+from typing import OrderedDict
 
 
 class GitAuthor:
@@ -255,48 +256,87 @@ class GitCommit:
 
 @total_ordering
 class GitAuthorName:
+    """
+    This class implements collection of authors that share the same
+    normalized name.
+
+    This class implements is both hashable and implements total ordering
+    based on the value of the normalized name.
+    """
 
     @staticmethod
     def normalize_name(name: str):
-        return name.capitalize()
+        """
+        Normalizes a user name. It uses the following rules:
+
+        * All parts of the names will be capitalized;
+        * Multiple spaces between name parts will be replaced by a single space;
+        * Starting and trailing spaces will be removed;
+
+        For example, the string ' aLan MathisOn  Turing ' will become 'Alan Mathison Turing'.
+        """
+        return ' '.join(p.capitalize() for p in name.split()).strip()
 
     def __init__(self, author: GitAuthor) -> None:
-        self._name = author.name
-        self._normalized = GitAuthorName.normalize_name(author.name)
-        self._authors = set()
-        self._authors.add(author)
+        self._name = GitAuthorName.normalize_name(author.name)
+        self._authors = OrderedDict()
+        self._authors[author] = 0
 
     @property
     def name(self) -> str:
+        """
+        Returns the normalized name of the author.
+        """
         return self._name
 
     @property
-    def authors(self) -> set:
-        return self._authors
-
-    @property
-    def normalized(self):
-        return self._normalized
+    def authors(self) -> list:
+        """
+        Return a list of GitAuthor that shares the same normalized
+        name.
+        """
+        return list(self._authors)
 
     def same_name(self, name: str) -> bool:
-        return self.normalized == GitAuthorName.normalize_name(name)
+        """
+        Verifies if a given name matches this instnace.
+        """
+        return self.name == GitAuthorName.normalize_name(name)
 
-    def same_author(self, author: GitAuthor):
-        return author in self.authors
+    def __contains__(self, item) -> bool:
+        return item in self._authors
 
-    def add_author(self, author: GitAuthor):
+    def add_author(self, author: GitAuthor) -> bool:
+        """
+        Tries to add the specified author to this instance. It is possible if and
+        only if the normalized names matches.
+
+        Returns true if the author's normalized name matches or false otherwise.
+        """
         if not self.same_name(author.name):
-            raise ValueError(f'{self.name} does not match {author.name}')
-        self._authors.add(author)
+            return False
+        else:
+            if not author in self:
+                self._authors[author] = 0
+            return True
+
+    def __str__(self) -> str:
+        s = self.name + ' ['
+        for a in self.authors:
+            s = s + str(a) + '; '
+        return s + ']'
+
+    def __repr__(self) -> str:
+        return str(self)
 
     def __eq__(self, o: object) -> bool:
-        return self.normalized == o.normalized
+        return self.name == o.name
 
     def __hash__(self) -> int:
-        return hash(self.normailzed)
+        return hash(self.name)
 
     def __lt__(self, o: object):
-        return self.normalized < o.normalized
+        return self.name < o.name
 
 
 class GitLog:
@@ -350,17 +390,19 @@ class GitLog:
         """
         return GitLog([c for c in self._commits if c.commit_type == commit_type])
 
-    def by_author(self, author: GitAuthor):
+    def by_authors(self, authors: list):
         """
         Filters all commits from a given user.
         """
-        return GitLog([c for c in self._commits if c.author == author])
+        author_set = set(
+            authors)  # Speed-up things by creating a set instead of a list
+        return GitLog([c for c in self._commits if c.author in author_set])
 
     def by_author_name(self, author: GitAuthorName):
         """
         Filters all commits from a given user.
         """
-        return GitLog([c for c in self._commits if author.same_author(c.author)])
+        return GitLog([c for c in self._commits if c.author in author])
 
     def by_date(self, start_date: date, end_date: date):
         """
