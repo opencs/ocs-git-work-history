@@ -269,13 +269,19 @@ class TestGitCommitParser(unittest.TestCase):
         )
 
 
-def load_sample_file(file: str):
+def load_sample_file(file: str) -> str:
+    """
+    Loads the contents of a given sample file.
+    """
     file_name = SAMPLE_DIR / file
     with open(file_name, 'r', encoding='utf-8') as inp:
         return inp.read()
 
 
-def get_sample_log():
+def get_sample_log() -> list:
+    """
+    Return the list of commits loaded from the sample file.
+    """
     p = GitLogParser()
     if p.run(load_sample_file('log-sample.txt')):
         return p.result

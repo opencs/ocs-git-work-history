@@ -363,5 +363,12 @@ class TestGitLog(unittest.TestCase):
             self.assertLess(c.timestamp.date(), end_date)
 
 
+def get_sample_git_log():
+    """
+    Retuns the a GitLog instance based on the sample file.
+    """
+    return GitLog(get_sample_log())
+
+
 if __name__ == '__main__':
     unittest.main()
