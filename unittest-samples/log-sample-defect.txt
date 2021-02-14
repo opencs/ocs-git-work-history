@@ -102,7 +102,7 @@ musashi.miyamoto@email.com
 dea65210032ee4818b206e4d2b75b765f39ef95d
 5ed07d0010a7b03a560c673f7cf150eb247d0865
 Shinmen Takezō
-franco@Francos-iMac-SSD.local
+musashi.miyamoto@email.com
 2021-01-05T10:54:57-03:00
 
 18	2	code/theproduct/static/css/thecustomer.css
@@ -166,7 +166,7 @@ george.orwell@email.com
 1687b615d743e46c9bd156d89794c522fc20fedf
 8f63e854e29e76a127087d27f0a9f1ce69824c53
 Shinmen Takezō
-franco@FrancosiMacSSD.lan
+musashi.miyamoto@email.com
 2020-12-21T14:35:22-03:00
 
 5	4	code/theproduct/jazzmin/jazzmin_settings.py
@@ -607,7 +607,7 @@ musashi.miyamoto@email.com
 28e03ff6a30db17b13f9981f2947179bd056713d
 1843198d870e7cf15a16e8d1b3d00dcc66d3ee2f
 Shinmen Takezō
-franco@FrancosiMacSSD.lan
+musashi.miyamoto@email.com
 2020-12-03T12:47:23-03:00
 
 1	0	code/theproduct/static/css/thecustomer.css
@@ -616,7 +616,7 @@ franco@FrancosiMacSSD.lan
 1843198d870e7cf15a16e8d1b3d00dcc66d3ee2f
 9697c7d49f4b6aecbea0f4f049e42028e3747ea5
 Shinmen Takezō
-franco@FrancosiMacSSD.lan
+musashi.miyamoto@email.com
 2020-12-03T12:30:03-03:00
 
 1	0	code/theproduct/static/css/thecustomer.css
@@ -625,7 +625,7 @@ franco@FrancosiMacSSD.lan
 9697c7d49f4b6aecbea0f4f049e42028e3747ea5
 e99e385b430fb8998074592178869eed6810be7b
 Shinmen Takezō
-franco@FrancosiMacSSD.lan
+musashi.miyamoto@email.com
 2020-12-03T11:34:16-03:00
 
 6	3	code/theproduct/jazzmin/jazzmin_settings.py

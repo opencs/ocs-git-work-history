@@ -17,6 +17,7 @@
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
 import unittest
 from .model import *
+from .test_parser import get_sample_log
 
 
 class TestGitAuthor(unittest.TestCase):
@@ -175,6 +176,105 @@ class TestGitDiffBuilder(unittest.TestCase):
         self.assertEqual(d2[1].file_name, 'file1')
         self.assertEqual(d2[1].added, 6)
         self.assertEqual(d2[1].deleted, 8)
+
+
+class TestGitCommit(unittest.TestCase):
+
+    def test_contructor(self):
+        b = GitDiffBuilder()
+        id = 'id'
+        parents = ['parent1', 'parent2']
+        author = GitAuthor('email', 'author')
+        timestamp = datetime.now()
+        diff = b.build()
+        c = GitCommit(id, parents, timestamp, author, diff)
+        self.assertEqual(c.id, id)
+        self.assertEqual(c.parents, parents)
+        self.assertEqual(c.timestamp, timestamp)
+        self.assertEqual(c.author.email, author.email)
+        self.assertEqual(c.author.name, author.name)
+        self.assertEqual(len(c.diff), len(diff))
+
+        b.add_entry('file', 1, 2)
+        diff = b.build()
+        c = GitCommit(id, parents, timestamp, author, diff)
+        self.assertEqual(c.id, id)
+        self.assertEqual(c.parents, parents)
+        self.assertEqual(c.timestamp, timestamp)
+        self.assertEqual(c.author.email, author.email)
+        self.assertEqual(c.author.name, author.name)
+        self.assertEqual(len(c.diff), len(diff))
+        self.assertEqual(c.diff[0].file_name, diff[0].file_name)
+
+    def test_commit_type(self):
+        b = GitDiffBuilder()
+        id = 'id'
+        author = GitAuthor('email', 'author')
+        timestamp = datetime.now()
+        diff = b.build()
+
+        c = GitCommit(id, [], timestamp, author, diff)
+        self.assertEqual(c.commit_type, GitCommitType.ROOT)
+
+        c = GitCommit(id, ['1234'], timestamp, author, diff)
+        self.assertEqual(c.commit_type, GitCommitType.NORMAL)
+
+        c = GitCommit(id, ['1234', '5678'], timestamp, author, diff)
+        self.assertEqual(c.commit_type, GitCommitType.MERGE)
+
+        c = GitCommit(id, ['1234', '5678', '9012'], timestamp, author, diff)
+        self.assertEqual(c.commit_type, GitCommitType.MERGE)
+
+
+class TestGitLog(unittest.TestCase):
+
+    def test_constructor(self):
+        l = GitLog([])
+        self.assertFalse(l)
+        self.assertFalse(l.authors)
+
+        l = GitLog(get_sample_log())
+        self.assertTrue(l)
+        self.assertEqual(len(l), 67)
+        self.assertTrue(l.authors)
+        self.assertEqual(len(l.authors), 4)
+
+        self.assertEqual(l[0].timestamp, l.min_date)
+        self.assertEqual(l[-1].timestamp, l.max_date)
+        # Ensure it is sorted by date.
+        last_date = l[0].timestamp
+        for c in l:
+            t = c.timestamp
+            self.assertGreaterEqual(t, last_date)
+            last_date = t
+
+    def test_by_type(self):
+        src = GitLog(get_sample_log())
+
+        for t in list(GitCommitType):
+            l = src.by_type(t)
+            for c in l:
+                self.assertEqual(c.commit_type, t)
+
+    def test_by_author(self):
+        src = GitLog(get_sample_log())
+
+        for a in src.authors:
+            l = src.by_author(a.email)
+            self.assertEqual(l.authors, [a])
+            for c in l:
+                self.assertEqual(c.author.email, a.email)
+
+    def test_by_date(self):
+        src = GitLog(get_sample_log())
+
+        start_date = src[10].timestamp.date()
+        end_date = src[20].timestamp.date()
+
+        l = src.by_date(start_date, end_date)
+        for c in l:
+            self.assertGreaterEqual(c.timestamp.date(), start_date)
+            self.assertLess(c.timestamp.date(), end_date)
 
 
 if __name__ == '__main__':

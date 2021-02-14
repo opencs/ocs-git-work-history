@@ -15,7 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
-from datetime import date, datetime
+from datetime import datetime, date
+from enum import Enum, auto
 
 
 class GitAuthor:
@@ -42,6 +43,12 @@ class GitAuthor:
 
     def same(self, o: object) -> bool:
         return self._email == o._email
+
+    def __str__(self) -> str:
+        return f'{self.name} <{self.email}>'
+
+    def __repr__(self) -> str:
+        return str(self)
 
 
 class GitDiffEntry:
@@ -81,6 +88,8 @@ class GitDiff:
     """
     This class implements the diff set of a given commit. It contains 0 or more git diff
     entries.
+
+    Instances of this class are expected to be immutable.
     """
 
     def __init__(self, entries: list) -> None:
@@ -189,9 +198,17 @@ class GitDiffBuilder:
         return GitDiff(entries)
 
 
+class GitCommitType(Enum):
+    ROOT = auto()
+    NORMAL = auto()
+    MERGE = auto()
+
+
 class GitCommit:
     """
     This class implements the complete Git commit information.
+
+    Instances of this class are expected to be immutable.
     """
 
     def __init__(self, id, parents: list, timestamp: datetime, author: GitAuthor, diff: GitDiff) -> None:
@@ -222,15 +239,73 @@ class GitCommit:
         return self._diff
 
     @property
-    def merge(self) -> bool:
+    def commit_type(self) -> GitCommitType:
         """
-        Returns true if this commit is a merge.
+        Returns the type of the commit. It uses the number of parents
+        to determine the type of the commit.
         """
-        return len(self.parents) > 1
+        return (
+            GitCommitType.ROOT,
+            GitCommitType.NORMAL,
+            GitCommitType.MERGE)[min(len(self.parents), 2)]
+
+
+class GitLog:
+    """
+    This class implements a Git log. It gets a list of ``GitCommit``
+    instances and extracts some useful statistics from it.
+
+    Instances of this class are expected to be immutable.
+    """
+    # TODO: The implementation of this class may be optimized in the future.
+
+    def __init__(self, commits: list) -> None:
+        self._commits = list(commits)
+        self._update()
+
+    def _update(self):
+        self._commits.sort(key=lambda x: x.timestamp)
+        authors = {}
+        for c in self._commits:
+            authors[c.author.email] = c.author
+        self.authors = list(authors.values())
+        self.authors.sort(key=lambda x: x.email)
+
+    def __len__(self) -> int:
+        return len(self._commits)
+
+    def __bool__(self) -> bool:
+        return bool(self._commits)
+
+    def __iter__(self):
+        return iter(self._commits)
+
+    def __getitem__(self, index: int) -> GitCommit:
+        return self._commits[index]
 
     @property
-    def root(self) -> bool:
+    def min_date(self) -> datetime:
+        return self[0].timestamp
+
+    @property
+    def max_date(self) -> datetime:
+        return self[-1].timestamp
+
+    def by_type(self, commit_type: GitCommitType):
         """
-        Returns true if this commit is the root of the repository.
+        Filters all commits of a given type.
         """
-        return not self.parents
+        return GitLog([c for c in self._commits if c.commit_type == commit_type])
+
+    def by_author(self, author_email: str):
+        """
+        Filters all commits from a given user.
+        """
+        return GitLog([c for c in self._commits if c.author.email == author_email])
+
+    def by_date(self, start_date: date, end_date: date):
+        """
+        Filters all commits between start(inclusive) and end_date(exclusive).
+        """
+        return GitLog([c for c in self._commits
+                       if c.timestamp.date() >= start_date and c.timestamp.date() < end_date])

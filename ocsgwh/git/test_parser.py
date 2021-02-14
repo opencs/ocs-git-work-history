@@ -269,15 +269,24 @@ class TestGitCommitParser(unittest.TestCase):
         )
 
 
+def load_sample_file(file: str):
+    file_name = SAMPLE_DIR / file
+    with open(file_name, 'r', encoding='utf-8') as inp:
+        return inp.read()
+
+
+def get_sample_log():
+    p = GitLogParser()
+    if p.run(load_sample_file('log-sample.txt')):
+        return p.result
+    else:
+        raise ValueError('Unable to load the sample file.')
+
+
 class TestGitLogParser(unittest.TestCase):
 
-    def load_sample(self, file: str):
-        file_name = SAMPLE_DIR / file
-        with open(file_name, 'r', encoding='utf-8') as inp:
-            return inp.read()
-
     def test_run(self):
-        src = self.load_sample('log-sample.txt')
+        src = load_sample_file('log-sample.txt')
         p = GitLogParser()
 
         self.assertTrue(p.run(src))
@@ -289,7 +298,7 @@ class TestGitLogParser(unittest.TestCase):
         self.assertEqual(ret[66].author.email, 'william.shakespeare@email.com')
 
     def test_run_ignore_bad(self):
-        src = self.load_sample('log-sample-defect.txt')
+        src = load_sample_file('log-sample-defect.txt')
         p = GitLogParser()
 
         self.assertTrue(p.run(src))
@@ -301,12 +310,14 @@ class TestGitLogParser(unittest.TestCase):
 
     @unittest.skipUnless((ROOT_DIR / '.git').is_dir(), 'The root of the project is not a git repository.')
     def test_run_git(self):
-        # self.fail()
-
         p = GitLogParser()
         self.assertTrue(p.run_git(ROOT_DIR))
         ret = p.result
         self.assertGreaterEqual(len(ret), 1)
+
+    def test_get_sample_log(self):
+        p = get_sample_log()
+        self.assertEqual(len(p), 67)
 
 
 if __name__ == '__main__':
