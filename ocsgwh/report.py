@@ -23,10 +23,10 @@ from .git.model import *
 ONE_DAY_TIME_DELTA = timedelta(days=1)
 
 
-class DiffReport:
-    def __init__(self) -> None:
-        self.added = 0
-        self.deleted = 0
+class DiffSummary:
+    def __init__(self, added: int = 0, deleted: int = 0) -> None:
+        self.added = added
+        self.deleted = deleted
 
     def update_with_entry(self, entry: GitDiffEntry):
         self.added += entry.added
@@ -110,9 +110,9 @@ class DiffHistogramBuilder (BaseHistogramBuilder):
 
     def __init__(self, start_date: date, end_date: date) -> None:
         super(BaseHistogramBuilder, self).__init__(
-            start_date, end_date, DiffReport)
+            start_date, end_date, DiffSummary)
 
-    def update_entry(self, commit: GitCommit, current_value: DiffReport) -> DiffReport:
+    def update_entry(self, commit: GitCommit, current_value: DiffSummary) -> DiffSummary:
         current_value.update_with_diff(commit.diff)
         return current_value
 

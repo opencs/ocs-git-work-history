@@ -15,3 +15,38 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
+import argparse
+import sys
+from pathlib import Path
+from ocsgwh import Engine, Options, EngineError
+
+PROGRAM_DESC = """
+%(prog)s - A Git work history report generator
+Copyright (C) 2021 Open Communications Security
+"""
+LICENSE_DESC = """
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under the terms of GNU GENERAL PUBLIC LICENSE, Version 3.
+See <https://www.gnu.org/licenses/> for further detais.
+"""
+
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description=PROGRAM_DESC,
+    epilog=LICENSE_DESC)
+parser.add_argument('git_repo', metavar='<repository dir>', type=Path,
+                    help='Git repository directory.')
+parser.add_argument('output_dir', metavar='<output directory>', type=Path,
+                    help='Output directory.')
+
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+    options = Options(args.git_repo, args.output_dir)
+    engine = Engine(options)
+    try:
+        engine.run()
+    except EngineError as err:
+        sys.stderr.write(f'{err}\n')
+        sys.exit(err.return_code)
