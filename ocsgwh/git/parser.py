@@ -25,6 +25,12 @@ from logging import getLogger
 LOGGER = getLogger(__name__)
 
 
+class GitExecutionError(Exception):
+
+    def __init__(self, return_code) -> None:
+        super().__init__(f'git exited with return code {return_code}.')
+
+
 def parse_iso_date(s):
     """
     Parses a strict ISO date (e.g.: '2021-01-21T14:24:07-03:00').
@@ -70,7 +76,7 @@ def run_git_log(repo_dir: Path) -> str:
     if p.returncode == 0:
         return p.stdout
     else:
-        return None
+        raise GitExecutionError(p.returncode)
 
 
 class BaseGitCommitParser:

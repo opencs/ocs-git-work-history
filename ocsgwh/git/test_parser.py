@@ -35,10 +35,12 @@ class TestFunctions(unittest.TestCase):
 
     def test_run_into_myself(self):
         s = run_git_log(ROOT_DIR)
-        self.assertIsNotNone(s)
 
-        s = run_git_log(tempfile.gettempdir())
-        self.assertIsNone(s)
+    def test_run_outside_a_git_repo(self):
+        tmp_dir = Path(tempfile.gettempdir())
+
+        self.assertRaises(GitExecutionError, run_git_log,
+                          tmp_dir)
 
 
 class TestGitCommitParser(unittest.TestCase):
