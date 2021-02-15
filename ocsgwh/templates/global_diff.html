@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>OpenCS Git Work History - Report {{report_date}}</title>
+    <link rel="stylesheet" href="ocsgwh.css" type="text/css">
+</head>
+
+<body>
+    <h1>OpenCS Git Work History</h1>
+    <h2>{{repository_dir}} - {{report_date}}</h2>
+
+    <table>
+        <tr>
+            <td>Start date</td>
+            <td>{{start_date}}</td>
+        </tr>
+        <tr>
+            <td>End date</td>
+            <td>{{end_date}}</td>
+        </tr>
+        <tr>
+            <td>Total number of days</td>
+            <td>{{total_days}}</td>
+        </tr>
+        <tr>
+            <td>Total number of days with commits</td>
+            <td>{{days_with_commits}}</td>
+        </tr>
+        <tr>
+            <td>Total number of files</td>
+            <td>{{file_count}}</td>
+        </tr>
+        <tr>
+            <td>Files with no deletions</td>
+            <td>{{added_only}}</td>
+        </tr>
+        <tr>
+            <td>Mean changes per days with commits</td>
+            <td>{{mean_changes_per_day}}</td>
+        </tr>
+    </table>
+    <hr>
+    <table>
+        <tr>
+            <th>File name</th>
+            <th>Added</th>
+            <th>Deleted</th>
+            <th>Changes</th>
+        </tr>
+        {% for d in diff %}
+        <tr class="{% if d.deleted == 0 %}additionsOnly{% else %}{% endif %}">
+
+            <td>{{ d.file_name }}</td>
+            <td>{{ d.added }}</td>
+            <td>{{ d.deleted }}</td>
+            <td>{{ d.changed }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="summary">
+            <td>Total</td>
+            <td>{{ total_added }}</td>
+            <td>{{ total_deleted }}</td>
+            <td>{{ total_changed }}</td>
+        </tr>
+    </table>
+</body>
+
+</html>

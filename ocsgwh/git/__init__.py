@@ -23,4 +23,5 @@ def is_git_repo(dir: Path) -> bool:
     Verifies if the given directory points to a valid git repository.
     """
     git_dir = dir / '.git'
-    return git_dir.is_dir()
+    git_bare_dir = dir / 'refs' / 'heads'
+    return git_dir.is_dir() or git_bare_dir.is_dir()

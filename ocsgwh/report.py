@@ -132,3 +132,38 @@ def create_author_diff_report(log: GitLog) -> list:
     for a in log.authors:
         ret.append((a, tmp[a.email].build()))
     return ret
+
+
+def basic_log_vars(log: GitLog):
+    num_days = (log.max_date.date() - log.min_date.date()).days + 1
+    days_with_commits = set()
+    for c in log:
+        days_with_commits.add(c.timestamp.date())
+    return {'start_date': log.min_date.date(), 'end_date': log.max_date.date(),
+            'total_days': num_days, 'days_with_commits': len(days_with_commits)}
+
+
+def create_global_git_report(log: GitLog) -> list:
+    b = GitDiffBuilder()
+
+    basic_log = basic_log_vars(log)
+
+    for c in log:
+        b.add_diff(c.diff)
+    diff = list(b.build())
+    diff.sort(key=lambda x: x.file_name)
+    added = 0
+    deleted = 0
+    added_only = 0
+    for d in diff:
+        added += d.added
+        deleted += d.deleted
+        if d.deleted == 0:
+            added_only += 1
+
+    mean_changes = float(added + deleted) / basic_log['days_with_commits']
+
+    return {'diff': diff, 'total_added': added, 'total_deleted': deleted,
+            'total_changed': added + deleted, 'mean_changes_per_day': mean_changes,
+            'file_count': len(diff), 'added_only': added_only,
+            **basic_log}

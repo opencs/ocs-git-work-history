@@ -20,6 +20,7 @@ from shutil import copyfile
 from .git.parser import GitLogParser, GitExecutionError, LOGGER
 from .git.model import GitLog
 from .git import is_git_repo
+from .report import *
 from pathlib import Path
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -94,8 +95,9 @@ class Engine:
         self.basic_template_vars = {'repository_dir': str(
             self.options.repo_dir.absolute()), 'report_date': datetime.now()}
 
+        self.generate_global_diff(log)
+        self.deploy_index(log)
         self.deploy_static_files(self.options.output_dir)
-        self.render_template('index.html', 'index.html', {})
 
     def render_template(self, template_name, file_name: str, vars: dict):
         template = self.get_template(template_name)
@@ -109,3 +111,11 @@ class Engine:
         static_files = [f for f in files if f.suffix in STATIC_EXTENSIONS]
         for f in static_files:
             copyfile(f, target_dir / f.name)
+
+    def generate_global_diff(self, log: GitLog):
+        self.render_template('global_diff.html',
+                             'global_diff.html', create_global_git_report(log))
+
+    def deploy_index(self, log: GitLog):
+        self.render_template('index.html', 'index.html',
+                             {'authors': log.authors})

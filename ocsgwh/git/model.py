@@ -303,6 +303,13 @@ class GitAuthorName:
         """
         return self.name == GitAuthorName.normalize_name(name)
 
+    def same_email(self, email: str) -> bool:
+        email = email.lower()
+        for a in self.authors:
+            if a.email.lower() == email:
+                return True
+        return False
+
     def __contains__(self, item) -> bool:
         return item in self._authors
 
@@ -313,12 +320,12 @@ class GitAuthorName:
 
         Returns true if the author's normalized name matches or false otherwise.
         """
-        if not self.same_name(author.name):
-            return False
-        else:
+        if self.same_name(author.name) or self.same_email(author.email):
             if not author in self:
                 self._authors[author] = 0
             return True
+        else:
+            return False
 
     def __str__(self) -> str:
         s = self.name + ' ['
@@ -353,15 +360,21 @@ class GitLog:
         self._update()
 
     def _update(self):
+        """
+        """
         self._commits.sort(key=lambda x: x.timestamp)
-        authors = {}
+        seen = set()
+        self.authors = []
         for c in self._commits:
-            name = GitAuthorName.normalize_name(c.author.name)
-            if name in authors:
-                authors[name].add_author(c.author)
-            else:
-                authors[name] = GitAuthorName(c.author)
-        self.authors = list(authors.values())
+            if not c.author in seen:
+                seen.add(c.author)
+                found = False
+                for candidate in self.authors:
+                    if candidate.add_author(c.author):
+                        found = True
+                        break
+                if not found:
+                    self.authors.append(GitAuthorName(c.author))
         self.authors.sort()
 
     def __len__(self) -> int:

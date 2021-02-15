@@ -1,0 +1,14 @@
+table {
+    border: 1px solid black;
+}
+td {
+    border: 1px solid black;
+}
+
+tr.additionsOnly {
+    background-color: aquamarine;
+}
+
+tr.summary {
+    font-weight: bold;
+}

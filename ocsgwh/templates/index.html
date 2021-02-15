@@ -10,6 +10,31 @@
     <h1>OpenCS Git Work History</h1>
     <h2>{{repository_dir}} - {{report_date}}</h2>
 
+    <h3>Developers</h3>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>e-mails</th>
+        </tr>
+        {% for a in authors %}
+        <tr>
+            <td>{{a.name}}</td>
+            <td>
+                <ul>
+                    {% for e in a.authors %}
+                    <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+        </ul>
+    </table>
+
+    <h3>Reports</h3>
+    <ul>
+        <li><a href="global_diff.html">Global changes report</a></li>
+    </ul>
 </body>
 
 </html>
