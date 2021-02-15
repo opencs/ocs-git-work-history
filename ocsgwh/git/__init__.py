@@ -15,3 +15,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
+from pathlib import Path
+
+
+def is_git_repo(dir: Path) -> bool:
+    """
+    Verifies if the given directory points to a valid git repository.
+    """
+    git_dir = dir / '.git'
+    return git_dir.is_dir()
