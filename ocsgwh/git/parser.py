@@ -194,3 +194,6 @@ class GitLogParser:
     @property
     def result(self) -> list:
         return self._result
+
+    def build_git_log(self) -> GitLog:
+        return GitLog(self.result)
