@@ -63,10 +63,11 @@ class GitDiffEntry:
     Instances of this class are expected to be immutable.
     """
 
-    def __init__(self, file_name: str, added: int, deleted: int) -> None:
+    def __init__(self, file_name: str, added: int, deleted: int, update_count: int = -1) -> None:
         self._file_name = file_name
         self._added = added
         self._deleted = deleted
+        self._update_count = update_count
 
     @property
     def file_name(self) -> str:
@@ -83,6 +84,23 @@ class GitDiffEntry:
     @property
     def changed(self) -> int:
         return self.added + self.deleted
+
+    @property
+    def update_count(self) -> int:
+        return self._update_count
+
+    @property
+    def diff_class(self) -> str:
+        if self.deleted == 0:
+            if self.added == 0:
+                return 'empty'
+            else:
+                if self.update_count == 1:
+                    return 'new'
+                else:
+                    return 'added'
+        else:
+            return 'normal'
 
     def __eq__(self, o: object) -> bool:
         return self.file_name == o.file_name and self.added == o.added and self.deleted == o.deleted
@@ -134,7 +152,7 @@ class GitDiffBuilder:
     This class is a builder for ``GitDiff`` instances.
     """
     class Accumulator:
-        __slots__ = ('added', 'deleted')
+        __slots__ = ('added', 'deleted', 'update_count')
 
     def __init__(self) -> None:
         self._entries = dict()
@@ -159,10 +177,12 @@ class GitDiffBuilder:
             entry = self._entries[file_name]
             entry.added += added
             entry.deleted += deleted
+            entry.update_count += 1
         else:
             entry = GitDiffBuilder.Accumulator()
             entry.added = added
             entry.deleted = deleted
+            entry.update_count = 1
             self._entries[file_name] = entry
         return self
 
@@ -198,7 +218,8 @@ class GitDiffBuilder:
         files.sort()
         for f in files:
             entry = self._entries[f]
-            entries.append(GitDiffEntry(f, entry.added, entry.deleted))
+            entries.append(GitDiffEntry(
+                f, entry.added, entry.deleted, entry.update_count))
         return GitDiff(entries)
 
 

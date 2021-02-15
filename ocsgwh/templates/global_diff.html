@@ -9,7 +9,7 @@
 <body>
     <h1>OpenCS Git Work History</h1>
     <h2>{{repository_dir}} - {{report_date}}</h2>
-
+    <p><a href="index.html">Back</a></p>
     <table>
         <tr>
             <td>Start date</td>
@@ -25,7 +25,7 @@
         </tr>
         <tr>
             <td>Total number of days with commits</td>
-            <td>{{days_with_commits}}</td>
+            <td>{{days_with_commits}} ({{days_with_commits_percent}}%)</td>
         </tr>
         <tr>
             <td>Total number of files</td>
@@ -39,6 +39,10 @@
             <td>Mean changes per days with commits</td>
             <td>{{mean_changes_per_day}}</td>
         </tr>
+        <tr>
+            <td>Number of authors</td>
+            <td>{{author_count}}</td>
+        </tr>
     </table>
     <hr>
     <table>
@@ -47,14 +51,16 @@
             <th>Added</th>
             <th>Deleted</th>
             <th>Changes</th>
+            <th>Update count</th>
         </tr>
         {% for d in diff %}
-        <tr class="{% if d.deleted == 0 %}additionsOnly{% else %}{% endif %}">
+        <tr class="diff_{{d.diff_class}}">
 
             <td>{{ d.file_name }}</td>
             <td>{{ d.added }}</td>
             <td>{{ d.deleted }}</td>
             <td>{{ d.changed }}</td>
+            <td>{{ d.update_count }}</td>
         </tr>
         {% endfor %}
         <tr class="summary">

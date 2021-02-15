@@ -136,11 +136,14 @@ def create_author_diff_report(log: GitLog) -> list:
 
 def basic_log_vars(log: GitLog):
     num_days = (log.max_date.date() - log.min_date.date()).days + 1
-    days_with_commits = set()
+    commit_dates = set()
     for c in log:
-        days_with_commits.add(c.timestamp.date())
+        commit_dates.add(c.timestamp.date())
+    days_with_commits = len(commit_dates)
     return {'start_date': log.min_date.date(), 'end_date': log.max_date.date(),
-            'total_days': num_days, 'days_with_commits': len(days_with_commits)}
+            'total_days': num_days, 'days_with_commits': days_with_commits,
+            'days_with_commits_percent': (days_with_commits * 100) / float(num_days),
+            'author_count': len(log.authors)}
 
 
 def create_global_git_report(log: GitLog) -> list:

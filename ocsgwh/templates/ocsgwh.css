@@ -5,8 +5,20 @@ td {
     border: 1px solid black;
 }
 
-tr.additionsOnly {
-    background-color: aquamarine;
+tr.diff_new {
+    background-color: chartreuse;
+}
+
+tr.diff_added {
+    background-color: lightcyan;
+}
+
+tr.diff_normal {
+    background-color: white;
+}
+
+tr.diff_empty {
+    background-color: gray;
 }
 
 tr.summary {
