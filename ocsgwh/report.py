@@ -18,6 +18,7 @@
 from datetime import date, timedelta
 from collections import OrderedDict
 from typing import Any, Callable
+import pygal
 from .git.model import *
 
 ONE_DAY_TIME_DELTA = timedelta(days=1)
@@ -27,10 +28,12 @@ class DiffSummary:
     def __init__(self, added: int = 0, deleted: int = 0) -> None:
         self.added = added
         self.deleted = deleted
+        self.count = 0
 
     def update_with_entry(self, entry: GitDiffEntry):
         self.added += entry.added
         self.deleted += entry.deleted
+        self.count += 1
 
     def update_with_diff(self, diff: GitDiff):
         for entry in diff:
@@ -146,6 +149,19 @@ def basic_log_vars(log: GitLog):
             'author_count': len(log.authors)}
 
 
+def generate_histogram(og: GitLog, title: str) -> str:
+    line_chart = pygal.Bar()
+    line_chart.title = title
+    line_chart.x_labels = map(str, range(2002, 2013))
+    line_chart.add('Added', [None, None, {'value': 0}, 16.6,
+                             25,   31, 36.4, 45.5, 46.3, 42.8, 37.1])
+    line_chart.add('Deleted',  [None, None, None, None,
+                                None, None,    0,  3.9, 10.8, 23.8, 35.3])
+    line_chart.add('Commits',      [85.8, 84.6, 84.7, 74.5,
+                                    66, 58.6, 54.7, 44.8, 36.2, 26.6, 20.1])
+    return line_chart.render_data_uri()
+
+
 def create_global_git_report(log: GitLog) -> list:
     b = GitDiffBuilder()
 
@@ -164,9 +180,11 @@ def create_global_git_report(log: GitLog) -> list:
         if d.deleted == 0:
             added_only += 1
 
+    histo = generate_histogram(log, 'Global changes in the repository')
+
     mean_changes = float(added + deleted) / basic_log['days_with_commits']
 
     return {'diff': diff, 'total_added': added, 'total_deleted': deleted,
             'total_changed': added + deleted, 'mean_changes_per_day': mean_changes,
-            'file_count': len(diff), 'added_only': added_only,
+            'file_count': len(diff), 'added_only': added_only, 'histogram': histo,
             **basic_log}

@@ -1,8 +1,71 @@
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
 table {
     border: 1px solid black;
 }
+
 td {
     border: 1px solid black;
+
+}
+
+/* Base components */ 
+#topbar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 120px;
+    background-color: black;
+}
+#topbar_title {
+    float: left;
+    color: white;
+}
+
+#topbar_logo {
+    float: left;
+}
+
+#logo {
+    height: 110px;
+    padding: 5px;
+    background-color: black;
+}
+
+#main {
+    position: absolute;
+    top: 120px;
+    bottom: 35px;
+    left: 0px;
+    right: 0px;
+    padding: 10px;
+    overflow: auto;
+ }
+ #main_display {
+    position: relative;    
+ }
+#footer {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: 35px;
+    padding-top: 5px;
+    background-color: black;
+    color: white;
+    text-align: center;
+    vertical-align: center;
+    font-size: 10pt;
+}
+
+/* */ 
+
+table.diff_log {
+    width: 100%;
 }
 
 tr.diff_new {
