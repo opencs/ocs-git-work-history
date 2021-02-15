@@ -21,6 +21,10 @@ tr.diff_empty {
     background-color: gray;
 }
 
+tr.diff_removed {
+    background-color:red;
+}
+
 tr.summary {
     font-weight: bold;
 }

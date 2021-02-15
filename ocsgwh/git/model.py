@@ -100,7 +100,10 @@ class GitDiffEntry:
                 else:
                     return 'added'
         else:
-            return 'normal'
+            if self.added == self.deleted and self.update_count > 1:
+                return 'removed'
+            else:
+                return 'normal'
 
     def __eq__(self, o: object) -> bool:
         return self.file_name == o.file_name and self.added == o.added and self.deleted == o.deleted
