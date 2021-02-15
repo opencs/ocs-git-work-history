@@ -268,8 +268,12 @@ class TestGitAuthorName(unittest.TestCase):
         self.assertEqual(an.authors, [a1, a2])
 
         a3 = GitAuthor('email2', 'Name2')
-        self.assertFalse(an.add_author(a3))
-        self.assertEqual(an.authors, [a1, a2])
+        self.assertTrue(an.add_author(a3))
+        self.assertEqual(an.authors, [a1, a2, a3])
+
+        a4 = GitAuthor('email3', 'Name2')
+        self.assertFalse(an.add_author(a4))
+        self.assertEqual(an.authors, [a1, a2, a3])
 
     def test_contains(self):
         a1 = GitAuthor('email1', 'name')
