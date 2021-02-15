@@ -139,4 +139,4 @@ cython_debug/
 
 /.env/
 /.vscode/
-
+/test/

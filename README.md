@@ -26,8 +26,10 @@ you need this kind of report, please
 
 This tool requires the following dependencies:
 
-* Python 3.8.x or later (at least for now);
 * Git 2.27.0 or later;
+* Python 3.8.x or later (at least for now);
+    * pygal 2.4.0 or later
+    * jinja2 2.11.2 or later
 
 The other Python dependencies are defined in the file 
 **requirements.txt** and may be installed using **pip**.
