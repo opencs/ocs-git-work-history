@@ -222,7 +222,7 @@ class DailyHistogram(Histogram):
     """
 
     def __init__(self, create_value_func=lambda: 0, update_value_func=lambda a, b: a+b) -> None:
-        super(Histogram, self).__init__(create_value_func, update_value_func)
+        super().__init__(create_value_func, update_value_func)
         self._min_date = date.max
         self._max_date = date.min
 
@@ -236,7 +236,7 @@ class DailyHistogram(Histogram):
 
     def on_new_key(self, key):
         self._min_date = min(self._min_date, key)
-        self._max_date = min(self._max_date, key)
+        self._max_date = max(self._max_date, key)
 
     def keys(self) -> list:
         return [x for x in self.key_sequence()]

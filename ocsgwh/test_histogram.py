@@ -41,6 +41,9 @@ class DateSequenceIteratorTest(unittest.TestCase):
         except StopIteration:
             self.assertEqual(last, end)
 
+            i = DateSequenceIterator(end, start)
+            self.assertRaises(StopIteration, next, i)
+
     def test_not_divisible(self):
         start = date(1994, 1, 26)
         end = date(1994, 2, 25)
@@ -226,6 +229,98 @@ class TestHistogram(unittest.TestCase):
         s = NumericHistogramSummarizer()
         h.summarize(s)
         self.assertEqual(s.value, sum(keys))
+
+
+class DailyHistogramTest(unittest.TestCase):
+
+    def test_constructor(self):
+        h = DailyHistogram()
+        self.assertFalse(bool(h))
+        self.assertEqual(len(h), 0)
+        self.assertEqual(h.min_date, date.max)
+        self.assertEqual(h.max_date, date.min)
+
+    def test_on_new_key(self):
+        h = DailyHistogram()
+
+        d1 = date(1997, 8, 29)
+        d2 = date(1997, 8, 30)
+        d3 = date(1997, 8, 31)
+
+        self.assertEqual(h.min_date, date.max)
+        self.assertEqual(h.max_date, date.min)
+        h.on_new_key(d2)
+        self.assertEqual(h.min_date, d2)
+        self.assertEqual(h.max_date, d2)
+
+        h.on_new_key(d1)
+        self.assertEqual(h.min_date, d1)
+        self.assertEqual(h.max_date, d2)
+
+        h.on_new_key(d3)
+        self.assertEqual(h.min_date, d1)
+        self.assertEqual(h.max_date, d3)
+
+    def test_keys_len(self):
+        h = DailyHistogram()
+
+        d1 = date(2063, 4, 5)
+        d2 = date(2063, 4, 6)
+        d3 = date(2063, 4, 7)
+        d4 = date(2063, 4, 15)
+
+        self.assertEqual(h.keys(), [])
+        self.assertEqual(len(h), 0)
+
+        h.update_entry(d1, 1)
+        self.assertEqual(h.keys(), [d1])
+        self.assertEqual(len(h), 1)
+
+        h.update_entry(d3, 2)
+        self.assertEqual(h.keys(), [d1, d2, d3])
+        self.assertEqual(len(h), 3)
+
+        h.update_entry(d4, 15)
+        self.assertEqual(h.keys(), [x for x in DateSequenceIterator(d1, d4)])
+        self.assertEqual(len(h), 11)
+
+    def test_key_sequence(self):
+        h = DailyHistogram()
+
+        d1 = date(2063, 4, 5)
+        d2 = date(2063, 4, 15)
+
+        i = h.key_sequence()
+        self.assertRaises(StopIteration, next, i)
+
+        h[d1] = 1
+        i = h.key_sequence()
+        self.assertEquals(next(i), d1)
+        self.assertRaises(StopIteration, next, i)
+
+        h[d2] = 1
+        i = h.key_sequence()
+        exp = DateSequenceIterator(d1, d2)
+        last = d1
+        while True:
+            try:
+                last = next(i)
+                self.assertEqual(last, next(exp))
+            except StopIteration:
+                break
+        self.assertEqual(last, d2)
+
+    def test_group_key(self):
+        h = DailyHistogram()
+
+        d1 = date(2256, 3, 9)
+        d2 = datetime(2256, 3, 9, 1, 2, 3, 4)
+        d3 = datetime(2256, 3, 9, 2, 3, 4, 5)
+
+        self.assertEqual(h.group_key(d1), d1)
+        self.assertEqual(h.group_key(d2), d1)
+        self.assertEqual(h.group_key(d3), d1)
+        self.assertRaises(ValueError, h.group_key, 'afdsd')
 
 
 if __name__ == '__main__':
