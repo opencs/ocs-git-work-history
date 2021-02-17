@@ -18,7 +18,7 @@ td {
     top: 0px;
     left: 0px;
     right: 0px;
-    height: 120px;
+    height: 80px;
     background-color: black;
 }
 #topbar_title {
@@ -26,19 +26,27 @@ td {
     color: white;
 }
 
+#topbar_title h1 {
+    font-size: 14pt;
+}
+#topbar_title h2 {
+    font-size: 12pt;
+}
+
+
 #topbar_logo {
     float: left;
 }
 
 #logo {
-    height: 110px;
+    height: 70px;
     padding: 5px;
     background-color: black;
 }
 
 #main {
     position: absolute;
-    top: 120px;
+    top: 80px;
     bottom: 35px;
     left: 0px;
     right: 0px;
@@ -59,7 +67,11 @@ td {
     color: white;
     text-align: center;
     vertical-align: center;
-    font-size: 10pt;
+    font-size: 8pt;
+}
+
+#footer a {
+    color: cyan;
 }
 
 /* */ 
