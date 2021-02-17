@@ -259,3 +259,14 @@ class DailyHistogram(Histogram):
             return (self.max_date - self.min_date).days + 1
         else:
             return 0
+
+
+def find_previous_sunday(d: date):
+    """
+    This method returns the previous Sunday or the same day if
+    the date is already a Sunday.
+    """
+    if d.isoweekday() == 7:
+        return d
+    else:
+        return d - timedelta(days=d.isoweekday())

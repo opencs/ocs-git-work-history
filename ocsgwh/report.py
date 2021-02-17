@@ -17,7 +17,7 @@
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
 from datetime import date, timedelta
 import pygal
-from .historgram import DailyHistogram
+from .historgram import DailyHistogram, DateSequenceIterator, find_previous_sunday
 from .git.model import *
 
 ONE_DAY_TIME_DELTA = timedelta(days=1)
@@ -93,16 +93,8 @@ def basic_log_vars(log: GitLog):
             'author_count': len(log.authors)}
 
 
-def generate_histogram(log: GitLog, title: str) -> str:
-
-    h = DailyHistogram(create_value_func=DiffSummaryValue.new,
-                       update_value_func=DiffSummaryValue.update)
-    # Compute the histogram
-    for commit in log:
-        if commit.diff:
-            h.update_entry(commit.timestamp, commit.diff)
-
-    labels = h.keys()
+def generate_histogram_image(h: DailyHistogram, start: date, end: date):
+    labels = [x for x in DateSequenceIterator(start, end)]
     added = []
     deleted = []
     commits = []
@@ -112,13 +104,35 @@ def generate_histogram(log: GitLog, title: str) -> str:
         deleted.append(v.deleted)
         commits.append(v.update_count)
 
-    line_chart = pygal.Bar(x_label_rotation=90)
-    line_chart.title = title
+    line_chart = pygal.Bar(x_label_rotation=90, height=800, width=1600)
+    line_chart.title = f'From {start} to {end}'
     line_chart.x_labels = map(str, labels)
     line_chart.add('Added', added)
     line_chart.add('Deleted', deleted)
     line_chart.add('Commits', commits)
-    return [('title', line_chart.render_data_uri()), ('title', line_chart.render_data_uri())]
+    return (line_chart.title, line_chart.render_data_uri())
+
+
+FOUR_WEEKS_DELTA = timedelta(weeks=4)
+
+
+def generate_histogram(log: GitLog, title: str) -> str:
+
+    h = DailyHistogram(create_value_func=DiffSummaryValue.new,
+                       update_value_func=DiffSummaryValue.update)
+    # Compute the histogram
+    for commit in log:
+        if commit.diff:
+            h.update_entry(commit.timestamp, commit.diff)
+    histograms = []
+    start = find_previous_sunday(h.min_date)
+    while start < h.max_date:
+        end = start + FOUR_WEEKS_DELTA
+        histograms.append(
+            generate_histogram_image(h, start, end - ONE_DAY_TIME_DELTA))
+        start = end
+
+    return histograms
 
 
 def create_global_git_report(log: GitLog) -> list:

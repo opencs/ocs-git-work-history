@@ -323,5 +323,22 @@ class DailyHistogramTest(unittest.TestCase):
         self.assertRaises(ValueError, h.group_key, 'afdsd')
 
 
+class TestFunctions(unittest.TestCase):
+
+    def test_find_previous_sunday(self):
+        d = date(1985, 10, 12)
+
+        for i in range(30):
+            v = find_previous_sunday(d)
+            self.assertEqual(v.isoweekday(), 7)
+            if d.isoweekday() == 7:
+                self.assertEqual(d.isoweekday(), 7)
+            else:
+                self.assertLess((d - v).days, 7)
+            self.assertEqual(v.isoweekday(), 7)
+            print(f'{d} {v}')
+            d = d + ONE_DAY_DELTA
+
+
 if __name__ == '__main__':
     unittest.main()
