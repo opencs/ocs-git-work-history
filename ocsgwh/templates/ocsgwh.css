@@ -1,6 +1,7 @@
 body {
     margin: 0px;
     padding: 0px;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 table {
@@ -52,10 +53,28 @@ td {
     right: 0px;
     padding: 10px;
     overflow: auto;
+    font-size: 12pt;
  }
- #main_display {
+
+#main h1 {
+     font-size: 16pt;
+}
+
+#main h2 {
+     font-size: 14pt;
+}
+
+#main_display {
     position: relative;    
- }
+}
+
+.weekly_img {
+    height: 550px;
+}
+.daily_img {
+    height: 550px;
+}
+
 #footer {
     position: absolute;
     bottom: 0px;

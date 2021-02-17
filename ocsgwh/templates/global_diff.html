@@ -43,7 +43,7 @@
 
 <h3>Weekly</h3>
 
-<embed src="{{weekly_histo[1]}}" style="height: 800px;">
+<embed src="{{weekly_histo[1]}}" class="weekly_img">
 <div class="text">{{weekly_histo[0]}}</div>
 
 <h3>Daily</h3>
@@ -54,7 +54,7 @@
     <!-- Full-width images with number and caption text -->
     {% for h in histogram %}
     <div class="mySlides fade">
-        <embed src="{{h[1]}}" style="height: 800px;">
+        <embed src="{{h[1]}}" class="daily_img">
         <div class="text">{{h[0]}}</div>
     </div>
     {% endfor %}
