@@ -18,7 +18,8 @@
 from functools import total_ordering
 from datetime import datetime, date
 from enum import Enum, auto
-from typing import OrderedDict
+from hashlib import sha1
+import codecs
 
 
 class GitAuthor:
@@ -292,6 +293,9 @@ class GitAuthorName:
         self._name = name
         self._authors = authors
         self._author_set = set(authors)
+        hash = sha1()
+        hash.update(codecs.encode(self._name))
+        self._author_key = hash.hexdigest()
 
     @property
     def name(self) -> str:
@@ -299,6 +303,13 @@ class GitAuthorName:
         Returns the normalized name of the author.
         """
         return self._name
+
+    @property
+    def author_key(self):
+        """
+        Returns the sha1 hash of the name of the user in hex format.
+        """
+        return self._author_key
 
     @property
     def authors(self) -> list:

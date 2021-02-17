@@ -8,7 +8,7 @@
     </tr>
     {% for a in authors %}
     <tr>
-        <td>{{a.name}}</td>
+        <td><a href="{{a.author_key}}.html">{{a.name}}</a></td>
         <td>
             <ul>
                 {% for e in a.authors %}

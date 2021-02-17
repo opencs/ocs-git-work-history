@@ -1,0 +1,106 @@
+{% extends "base_page.html" %}
+{% block body %}
+<h1>Statistics of the repository for {{author.name}}</h1>
+
+<h2>Known Author Identities</h2>
+<ul>
+    {% for e in author.authors %}
+    <li>{{ e }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Repository properties</h2>
+<p>Basic information about the repository.</p>
+<table class="summary">
+
+    <tr>
+        <td>Start date</td>
+        <td>{{start_date}}</td>
+    </tr>
+    <tr>
+        <td>End date</td>
+        <td>{{end_date}}</td>
+    </tr>
+    <tr>
+        <td>Total number of days</td>
+        <td>{{total_days}}</td>
+    </tr>
+    <tr>
+        <td>Total number of days with commits</td>
+        <td>{{days_with_commits}} ({{days_with_commits_percent}}%)</td>
+    </tr>
+    <tr>
+        <td>Total number of files</td>
+        <td>{{file_count}}</td>
+    </tr>
+    <tr>
+        <td>Files with no deletions</td>
+        <td>{{added_only}}</td>
+    </tr>
+    <tr>
+        <td>Mean changes per days with commits</td>
+        <td>{{mean_changes_per_day}}</td>
+    </tr>
+    <tr>
+        <td>Number of authors</td>
+        <td>{{author_count}}</td>
+    </tr>
+</table>
+
+<h2>Activity histogram</h2>
+
+<h3>Weekly</h3>
+
+<embed src="{{weekly_histo[1]}}" style="height: 800px;">
+<div class="text">{{weekly_histo[0]}}</div>
+
+<h3>Daily</h3>
+
+<!-- Slideshow container -->
+<div class="slideshow-container">
+
+    <!-- Full-width images with number and caption text -->
+    {% for h in histogram %}
+    <div class="mySlides fade">
+        <embed src="{{h[1]}}" style="height: 800px;">
+        <div class="text">{{h[0]}}</div>
+    </div>
+    {% endfor %}
+
+    <!-- Next and previous buttons -->
+    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+</div>
+<br>
+<script src="slideshow.js" type=""></script>
+
+<h2>Changes per file</h2>
+<p>Number total of additions, deletions and updates fo a given file for all commits in the repository (measured in
+    lines).</p>
+<p>The changes are calculated by git log thus statistics for binary files may not be precise.</p>
+<table class="diff_log">
+    <tr>
+        <th>File name</th>
+        <th>Added</th>
+        <th>Deleted</th>
+        <th>Changes</th>
+        <th>Update count</th>
+    </tr>
+    {% for d in diff %}
+    <tr class="diff_{{d.diff_class}}">
+
+        <td>{{ d.file_name }}</td>
+        <td>{{ d.added }}</td>
+        <td>{{ d.deleted }}</td>
+        <td>{{ d.changed }}</td>
+        <td>{{ d.update_count }}</td>
+    </tr>
+    {% endfor %}
+    <tr class="summary">
+        <td>Total</td>
+        <td>{{ total_added }}</td>
+        <td>{{ total_deleted }}</td>
+        <td>{{ total_changed }}</td>
+    </tr>
+</table>
+{% endblock %}
