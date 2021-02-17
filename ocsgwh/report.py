@@ -17,7 +17,7 @@
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
 from datetime import date, timedelta
 import pygal
-from .historgram import DailyHistogram, DateSequenceIterator, find_previous_sunday
+from .historgram import DailyHistogram, DateSequenceIterator, ONE_WEEK_DELTA, find_previous_sunday, WeeklyHistogram
 from .git.model import *
 
 ONE_DAY_TIME_DELTA = timedelta(days=1)
@@ -105,7 +105,7 @@ def generate_histogram_image(h: DailyHistogram, start: date, end: date):
         commits.append(v.update_count)
 
     line_chart = pygal.Bar(x_label_rotation=90, height=800, width=1600)
-    line_chart.title = f'From {start} to {end}'
+    line_chart.title = f'Daily activity from {start} to {end}'
     line_chart.x_labels = map(str, labels)
     line_chart.add('Added', added)
     line_chart.add('Deleted', deleted)
@@ -116,7 +116,7 @@ def generate_histogram_image(h: DailyHistogram, start: date, end: date):
 FOUR_WEEKS_DELTA = timedelta(weeks=4)
 
 
-def generate_histogram(log: GitLog, title: str) -> str:
+def generate_histogram(log: GitLog) -> str:
 
     h = DailyHistogram(create_value_func=DiffSummaryValue.new,
                        update_value_func=DiffSummaryValue.update)
@@ -127,12 +127,40 @@ def generate_histogram(log: GitLog, title: str) -> str:
     histograms = []
     start = find_previous_sunday(h.min_date)
     while start < h.max_date:
-        end = start + FOUR_WEEKS_DELTA
+        end = start + ONE_WEEK_DELTA
         histograms.append(
             generate_histogram_image(h, start, end - ONE_DAY_TIME_DELTA))
         start = end
 
     return histograms
+
+
+def generate_weakly_histogram(log: GitLog) -> str:
+
+    h = WeeklyHistogram(create_value_func=DiffSummaryValue.new,
+                        update_value_func=DiffSummaryValue.update)
+    # Compute the histogram
+    for commit in log:
+        if commit.diff:
+            h.update_entry(commit.timestamp, commit.diff)
+
+    labels = h.keys()
+    added = []
+    deleted = []
+    commits = []
+    for l in labels:
+        v = h[l]
+        added.append(v.added)
+        deleted.append(v.deleted)
+        commits.append(v.update_count)
+
+    line_chart = pygal.Bar(x_label_rotation=90, height=800, width=1600)
+    line_chart.title = f'Weekly activity from {h.min_date} to {h.max_date}'
+    line_chart.x_labels = map(str, labels)
+    line_chart.add('Added', added)
+    line_chart.add('Deleted', deleted)
+    line_chart.add('Commits', commits)
+    return (line_chart.title, line_chart.render_data_uri())
 
 
 def create_global_git_report(log: GitLog) -> list:
@@ -153,11 +181,11 @@ def create_global_git_report(log: GitLog) -> list:
         if d.deleted == 0:
             added_only += 1
 
-    histo = generate_histogram(log, 'Global changes in the repository')
-
+    histo = generate_histogram(log)
+    weekly_histo = generate_weakly_histogram(log)
     mean_changes = float(added + deleted) / basic_log['days_with_commits']
 
     return {'diff': diff, 'total_added': added, 'total_deleted': deleted,
             'total_changed': added + deleted, 'mean_changes_per_day': mean_changes,
             'file_count': len(diff), 'added_only': added_only, 'histogram': histo,
-            **basic_log}
+            'weekly_histo': weekly_histo, **basic_log}
