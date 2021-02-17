@@ -288,23 +288,10 @@ class GitAuthorName:
     based on the value of the normalized name.
     """
 
-    @staticmethod
-    def normalize_name(name: str):
-        """
-        Normalizes a user name. It uses the following rules:
-
-        * All parts of the names will be capitalized;
-        * Multiple spaces between name parts will be replaced by a single space;
-        * Starting and trailing spaces will be removed;
-
-        For example, the string ' aLan MathisOn  Turing ' will become 'Alan Mathison Turing'.
-        """
-        return ' '.join(p.capitalize() for p in name.split()).strip()
-
-    def __init__(self, author: GitAuthor) -> None:
-        self._name = GitAuthorName.normalize_name(author.name)
-        self._authors = OrderedDict()
-        self._authors[author] = 0
+    def __init__(self, name: str, authors: list) -> None:
+        self._name = name
+        self._authors = authors
+        self._author_set = set(authors)
 
     @property
     def name(self) -> str:
@@ -321,35 +308,8 @@ class GitAuthorName:
         """
         return list(self._authors)
 
-    def same_name(self, name: str) -> bool:
-        """
-        Verifies if a given name matches this instnace.
-        """
-        return self.name == GitAuthorName.normalize_name(name)
-
-    def same_email(self, email: str) -> bool:
-        email = email.lower()
-        for a in self.authors:
-            if a.email.lower() == email:
-                return True
-        return False
-
-    def __contains__(self, item) -> bool:
-        return item in self._authors
-
-    def add_author(self, author: GitAuthor) -> bool:
-        """
-        Tries to add the specified author to this instance. It is possible if and
-        only if the normalized names matches.
-
-        Returns true if the author's normalized name matches or false otherwise.
-        """
-        if self.same_name(author.name) or self.same_email(author.email):
-            if not author in self:
-                self._authors[author] = 0
-            return True
-        else:
-            return False
+    def __contains__(self, author) -> bool:
+        return author in self._author_set
 
     def __str__(self) -> str:
         s = self.name + ' ['
@@ -429,8 +389,10 @@ class ComparableGitAuthor:
 
 class GitAuthorNameBuilder:
 
-    def __init__(self) -> None:
+    def __init__(self, first: ComparableGitAuthor = None) -> None:
         self._authors = set()
+        if first is not None:
+            self._authors.add(first)
 
     def try_add(self, author: ComparableGitAuthor) -> bool:
         if not self._authors:
@@ -465,7 +427,7 @@ class GitAuthorNameBuilder:
 
         name = self.find_best_name()
         authors = self.get_author_list()
-        return None
+        return GitAuthorName(name, authors)
 
 
 class GitLog:
@@ -482,22 +444,24 @@ class GitLog:
         self._update()
 
     def _update(self):
-        """
-        """
         self._commits.sort(key=lambda x: x.timestamp)
         seen = set()
-        self.authors = []
+        builders = []
         for c in self._commits:
             if not c.author in seen:
                 seen.add(c.author)
                 found = False
-                for candidate in self.authors:
-                    if candidate.add_author(c.author):
+                ca = ComparableGitAuthor(c.author)
+                for candidate in builders:
+                    if candidate.try_add(ca):
                         found = True
                         break
                 if not found:
-                    self.authors.append(GitAuthorName(c.author))
-        self.authors.sort()
+                    builders.append(GitAuthorNameBuilder(ca))
+        self.authors = []
+        for b in builders:
+            self.authors.append(b.build())
+        self.authors.sort(key=lambda x: x.name)
 
     def __len__(self) -> int:
         return len(self._commits)

@@ -233,65 +233,34 @@ class TestGitCommit(unittest.TestCase):
 
 class TestGitAuthorName(unittest.TestCase):
 
-    def test_normalize_name(self):
-        self.assertEqual(GitAuthorName.normalize_name(
-            'alan MathisOn  Turing'), 'Alan Mathison Turing')
-
     def test_constructor(self):
-        a1 = GitAuthor('email', 'alan MathisOn  Turing')
-        an = GitAuthorName(a1)
+        authors = [GitAuthor('email', 'alan MathisOn  Turing'),
+                   GitAuthor('email1', 'alan MathisOn  Turing')]
+        an = GitAuthorName('Alan Mathison Turing',
+                           authors)
 
         self.assertEqual(an.name, 'Alan Mathison Turing')
-        self.assertEqual(an.authors, [a1])
-
-    def test_same_name(self):
-        an = GitAuthorName(GitAuthor('email1', 'alan MathisOn  Turing'))
-
-        self.assertTrue(an.same_name('Alan Mathison Turing'))
-        self.assertTrue(an.same_name('Alan Mathison Turing '))
-        self.assertTrue(an.same_name(' Alan Mathison Turing'))
-        self.assertTrue(an.same_name('alan MathisOn  Turing'))
-        self.assertFalse(an.same_name('alan MathisOn Turin'))
-
-    def test_add_author(self):
-        a1 = GitAuthor('email1', 'name')
-        an = GitAuthorName(a1)
-
-        self.assertTrue(an.add_author(a1))
-        self.assertTrue(an.add_author(a1))
-        self.assertEqual(an.name, GitAuthorName.normalize_name(a1.name))
-        self.assertEqual(an.authors, [a1])
-
-        a2 = GitAuthor('email2', 'Name')
-        self.assertTrue(an.add_author(a2))
-        self.assertEqual(an.name, GitAuthorName.normalize_name(a1.name))
-        self.assertEqual(an.authors, [a1, a2])
-
-        a3 = GitAuthor('email2', 'Name2')
-        self.assertTrue(an.add_author(a3))
-        self.assertEqual(an.authors, [a1, a2, a3])
-
-        a4 = GitAuthor('email3', 'Name2')
-        self.assertFalse(an.add_author(a4))
-        self.assertEqual(an.authors, [a1, a2, a3])
+        self.assertEqual(an.authors, authors)
+        self.assertEqual(len(an._author_set), len(authors))
 
     def test_contains(self):
-        a1 = GitAuthor('email1', 'name')
-        a2 = GitAuthor('email2', 'Name')
-        a3 = GitAuthor('email3', 'Name')
-        an = GitAuthorName(a1)
-        self.assertTrue(a1 in an)
-        self.assertFalse(a2 in an)
+        authors = [GitAuthor('email', 'alan MathisOn  Turing'),
+                   GitAuthor('email1', 'alan MathisOn  Turing')]
+        an = GitAuthorName('Alan Mathison Turing',
+                           authors)
+        out = GitAuthor('email3', 'alan MathisOn  Turing')
 
-        an.add_author(a2)
-        self.assertTrue(a1 in an)
-        self.assertTrue(a2 in an)
-        self.assertFalse(a3 in an)
+        for a in authors:
+            self.assertTrue(a in an)
+        self.assertFalse(out in an)
 
     def test_hashable_order(self):
-        a1 = GitAuthorName(GitAuthor('email1', 'alan MathisOn  Turing'))
-        a2 = GitAuthorName(GitAuthor('email1', 'alan MathisOn Turing'))
-        a3 = GitAuthorName(GitAuthor('email1', 'blan MathisOn Turing'))
+        a1 = GitAuthorName('Alan Mathison  Turing', [
+                           GitAuthor('email1', 'alan MathisOn  Turing')])
+        a2 = GitAuthorName('Alan Mathison  Turing', [
+                           GitAuthor('email1', 'alan MathisOn Turing')])
+        a3 = GitAuthorName('Blan Mathison Turing', [
+                           GitAuthor('email1', 'blan MathisOn Turing')])
 
         self.assertEqual(a1, a1)
         self.assertEqual(a2, a1)
