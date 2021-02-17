@@ -19,6 +19,7 @@ from datetime import date, datetime, timedelta
 from collections import OrderedDict
 
 ONE_DAY_DELTA = timedelta(days=1)
+ONE_WEEK_DELTA = timedelta(weeks=1)
 
 
 class DateSequenceIterator:
@@ -270,3 +271,28 @@ def find_previous_sunday(d: date):
         return d
     else:
         return d - timedelta(days=d.isoweekday())
+
+
+class WeeklyHistogram(DailyHistogram):
+    """
+    This is a specialized version of the Histogram class that works with
+    weeks as its basic grouping unit.
+
+    As such, it can be updated with keys being both ``date`` and ``datetime``
+    instances. Furthermore, the scan
+    """
+
+    def __init__(self, create_value_func=lambda: 0, update_value_func=lambda a, b: a+b) -> None:
+        super().__init__(create_value_func, update_value_func)
+
+    def group_key(self, key):
+        return find_previous_sunday(super().group_key(key))
+
+    def key_sequence(self):
+        return DateSequenceIterator(self.min_date, self.max_date, ONE_WEEK_DELTA)
+
+    def __len__(self) -> int:
+        if self._entries:
+            return int((self.max_date - self.min_date).days / 7) + 1
+        else:
+            return 0

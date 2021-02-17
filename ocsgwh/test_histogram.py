@@ -19,6 +19,9 @@ import unittest
 from unittest.mock import MagicMock, call
 from .historgram import *
 
+# Note for nerds: Some dates are important to Science Fiction, can you
+# find which ones?
+
 
 class DateSequenceIteratorTest(unittest.TestCase):
 
@@ -101,7 +104,7 @@ class TestHistogram(unittest.TestCase):
         h.on_new_key = MagicMock(wraps=h.on_new_key)
         for i in range(10):
             self.assertEqual(h[i], 0)
-            self.assertEquals(h.group_key.call_args, call(i))
+            self.assertEqual(h.group_key.call_args, call(i))
         self.assertFalse(h.on_new_key.called)
 
         h.group_key.reset_mock()
@@ -109,7 +112,7 @@ class TestHistogram(unittest.TestCase):
         for i in range(10):
             if i % 2 == 0:
                 h[i] = 0
-                self.assertEquals(h.group_key.call_args, call(i))
+                self.assertEqual(h.group_key.call_args, call(i))
                 self.assertEqual(h.on_new_key.call_args, call(i))
 
         h.group_key.reset_mock()
@@ -117,7 +120,7 @@ class TestHistogram(unittest.TestCase):
         for i in range(10):
             if i % 2 == 0:
                 h[i] = i
-                self.assertEquals(h.group_key.call_args, call(i))
+                self.assertEqual(h.group_key.call_args, call(i))
         self.assertFalse(h.on_new_key.called)
 
         h.group_key.reset_mock()
@@ -127,7 +130,7 @@ class TestHistogram(unittest.TestCase):
                 self.assertEqual(h[i], i)
             else:
                 self.assertEqual(h[i], 0)
-            self.assertEquals(h.group_key.call_args, call(i))
+            self.assertEqual(h.group_key.call_args, call(i))
         self.assertFalse(h.on_new_key.called)
 
     def test_update_entry(self):
@@ -137,7 +140,7 @@ class TestHistogram(unittest.TestCase):
         h.on_new_key = MagicMock(wraps=h.on_new_key)
         for i in range(10):
             h.update_entry(i, i)
-            self.assertEquals(h.group_key.call_args, call(i))
+            self.assertEqual(h.group_key.call_args, call(i))
             self.assertEqual(h.on_new_key.call_args, call(i))
 
         for i in range(10):
@@ -147,7 +150,7 @@ class TestHistogram(unittest.TestCase):
         h.on_new_key.reset_mock()
         for i in range(10):
             h.update_entry(i, i)
-            self.assertEquals(h.group_key.call_args, call(i))
+            self.assertEqual(h.group_key.call_args, call(i))
         self.assertFalse(h.on_new_key.called)
 
         for i in range(10):
@@ -295,7 +298,7 @@ class DailyHistogramTest(unittest.TestCase):
 
         h[d1] = 1
         i = h.key_sequence()
-        self.assertEquals(next(i), d1)
+        self.assertEqual(next(i), d1)
         self.assertRaises(StopIteration, next, i)
 
         h[d2] = 1
@@ -323,6 +326,46 @@ class DailyHistogramTest(unittest.TestCase):
         self.assertRaises(ValueError, h.group_key, 'afdsd')
 
 
+class WeekHistogramTest(unittest.TestCase):
+
+    def test_constructor(self):
+        h = WeeklyHistogram()
+        self.assertFalse(bool(h))
+        self.assertEqual(len(h), 0)
+        self.assertEqual(h.min_date, date.max)
+        self.assertEqual(h.max_date, date.min)
+
+    def test_keys_len(self):
+        h = WeeklyHistogram()
+
+        start = date(1982, 1, 12)
+        end = date(1982, 1, 12) + timedelta(weeks=10, days=2)
+        h[start] = 1
+        self.assertEqual(len(h), 1)
+
+        h[end] = 1
+        self.assertEqual(len(h), len(h.keys()))
+
+    def test_key_sequence(self):
+        h = WeeklyHistogram()
+
+        start = date(1982, 1, 12)
+        end = date(1982, 1, 12) + timedelta(weeks=10, days=2)
+        h[start] = 1
+
+        h[end] = 1
+
+    def test_group_key(self):
+        h = WeeklyHistogram()
+
+        for d in DateSequenceIterator(date(2256, 3, 9), date(2256, 4, 9)):
+            exp = find_previous_sunday(d)
+            self.assertEqual(h.group_key(d), exp)
+            self.assertEqual(h.group_key(
+                datetime(d.year, d.month, d.day, 12, 0)), exp)
+            self.assertRaises(ValueError, h.group_key, 'afdsd')
+
+
 class TestFunctions(unittest.TestCase):
 
     def test_find_previous_sunday(self):
@@ -336,7 +379,6 @@ class TestFunctions(unittest.TestCase):
             else:
                 self.assertLess((d - v).days, 7)
             self.assertEqual(v.isoweekday(), 7)
-            print(f'{d} {v}')
             d = d + ONE_DAY_DELTA
 
 
