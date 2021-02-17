@@ -370,6 +370,104 @@ class GitAuthorName:
         return self.name < o.name
 
 
+class ComparableGitAuthor:
+
+    @staticmethod
+    def normalize_name(name: str):
+        """
+        Normalizes a user name. It uses the following rules:
+
+        * All parts of the names will be capitalized;
+        * Multiple spaces between name parts will be replaced by a single space;
+        * Starting and trailing spaces will be removed;
+
+        For example, the string ' aLan MathisOn  Turing ' will become 'Alan Mathison Turing'.
+        """
+        return ' '.join(p.capitalize() for p in name.split()).strip()
+
+    def __init__(self, author: GitAuthor) -> None:
+        self.author = author
+        self.email = author.email.strip().lower()
+        self.name = ComparableGitAuthor.normalize_name(author.name)
+        if not self.name:
+            ValueError('The name cannot be empty.')
+        self.parts = self.name.split(' ')
+
+    def same_name(self, other) -> bool:
+        return self.name == other.name
+
+    def same_email(self, other) -> bool:
+        return self.email == other.email
+
+    def same_first_last(self, other) -> bool:
+        return self.parts[0] == other.parts[0] and self.parts[-1] == other.parts[-1]
+
+    def match(self, other) -> int:
+        n = self.same_name(other)
+        e = self.same_email(other)
+        if e and n:
+            # Name and email matches
+            return 5
+        elif e:
+            # email only
+            return 4
+        if n:
+            # Name only
+            return 3
+        elif self.same_first_last(other):
+            # Partial match (first and last)
+            return 2
+        else:
+            return 0
+
+    def __hash__(self) -> int:
+        return hash(self.author)
+
+    def __eq__(self, other) -> bool:
+        return self.author == other.author
+
+
+class GitAuthorNameBuilder:
+
+    def __init__(self) -> None:
+        self._authors = set()
+
+    def try_add(self, author: ComparableGitAuthor) -> bool:
+        if not self._authors:
+            self._authors.add(author)
+            return True
+        elif author in self._authors:
+            return True
+        else:
+            for a in self._authors:
+                if author.match(a) > 0:
+                    self._authors.add(author)
+                    return True
+            return False
+
+    def find_best_name(self):
+        name = ''
+        for a in self._authors:
+            if len(a.name) > len(name):
+                name = a.name
+        return name
+
+    def get_author_list(self):
+        ret = []
+        for a in self._authors:
+            ret.append(a.author)
+        ret.sort(key=lambda x: str(x))
+        return ret
+
+    def build(self) -> GitAuthorName:
+        if not self._authors:
+            raise ValueError('This instance has no associated authors.')
+
+        name = self.find_best_name()
+        authors = self.get_author_list()
+        return None
+
+
 class GitLog:
     """
     This class implements a Git log. It gets a list of ``GitCommit``

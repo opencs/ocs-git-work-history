@@ -302,6 +302,159 @@ class TestGitAuthorName(unittest.TestCase):
         self.assertLess(a1, a3)
 
 
+class TestComparableGitAuthor(unittest.TestCase):
+    def test_normalize_name(self):
+        self.assertEqual(ComparableGitAuthor.normalize_name(
+            'alan MathisOn  Turing'), 'Alan Mathison Turing')
+
+    def test_constructor(self):
+        author = GitAuthor('Aturing@opencs.com.br', 'alan MathisOn  Turing')
+        a = ComparableGitAuthor(author)
+
+        self.assertEqual(a.author, author)
+        self.assertEqual(a.name, 'Alan Mathison Turing')
+        self.assertEqual(a.parts, ['Alan', 'Mathison', 'Turing'])
+
+    def test_same_name(self):
+        a1 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'alan MathisOn  Turing'))
+        a2 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan MathisOn Turing'))
+        a3 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan Turing'))
+
+        self.assertTrue(a1.same_name(a1))
+        self.assertTrue(a1.same_name(a2))
+        self.assertFalse(a1.same_name(a3))
+
+    def test_same_email(self):
+        a1 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'alan MathisOn  Turing'))
+        a2 = ComparableGitAuthor(
+            GitAuthor('aturing@opencs.com.br ', 'alan MathisOn Turing'))
+        a3 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan Turing'))
+
+        self.assertTrue(a1.same_email(a1))
+        self.assertTrue(a1.same_email(a2))
+        self.assertFalse(a1.same_email(a3))
+
+    def test_same_first_last(self):
+        a1 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'alan MathisOn  Turing'))
+        a2 = ComparableGitAuthor(
+            GitAuthor('aturing@opencs.com.br ', 'alan Turing'))
+        a3 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan MathisOn  Turning'))
+        a4 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alain MathisOn   Turing'))
+
+        self.assertTrue(a1.same_first_last(a1))
+        self.assertTrue(a1.same_first_last(a2))
+        self.assertFalse(a1.same_first_last(a3))
+
+    def test_match(self):
+        a1 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'alan MathisOn  Turing'))
+        a2 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'A. Turing'))
+        a3 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan MathisOn  Turing'))
+        a4 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan Turing'))
+        a5 = ComparableGitAuthor(
+            GitAuthor('babagge@opencs.com.br', 'Charles Babbage'))
+
+        self.assertEqual(a1.match(a1), 5)
+        self.assertEqual(a1.match(a2), 4)
+        self.assertEqual(a1.match(a3), 3)
+        self.assertEqual(a1.match(a4), 2)
+        self.assertEqual(a1.match(a5), 0)
+
+    def test_match(self):
+        a1 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'alan MathisOn  Turing'))
+        a2 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'alan MathisOn  Turing'))
+        a3 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan MathisOn  Turing'))
+        a4 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'alan MathisOn   Turing'))
+
+        self.assertEqual(a1, a2)
+        self.assertEqual(hash(a1), hash(a2))
+        self.assertNotEqual(a1, a3)
+        self.assertNotEqual(a1, a4)
+
+
+class TestGitAuthorNameBuilder(unittest.TestCase):
+
+    def test_constructor(self):
+        b = GitAuthorNameBuilder()
+        self.assertFalse(bool(b._authors))
+
+    def test_try_add(self):
+        b = GitAuthorNameBuilder()
+        a1 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'alan MathisOn  Turing'))
+        a2 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'A. Turing'))
+        a3 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan MathisOn  Turing'))
+        a4 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan Turing'))
+        a5 = ComparableGitAuthor(
+            GitAuthor('babagge@opencs.com.br', 'Charles Babbage'))
+
+        self.assertTrue(b.try_add(a1))
+        self.assertTrue(a1 in b._authors)
+        self.assertTrue(b.try_add(a1))
+        self.assertTrue(a1 in b._authors)
+        self.assertTrue(b.try_add(a2))
+        self.assertTrue(a2 in b._authors)
+        self.assertTrue(b.try_add(a3))
+        self.assertTrue(a3 in b._authors)
+        self.assertTrue(b.try_add(a4))
+        self.assertTrue(a4 in b._authors)
+        self.assertFalse(b.try_add(a5))
+        self.assertTrue(a5 not in b._authors)
+
+    def test_find_best_name(self):
+        b = GitAuthorNameBuilder()
+        a1 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'alan MathisOn  Turing'))
+        a2 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'A. Turing'))
+        a3 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan MathisOn  Turing'))
+        a4 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan Turing'))
+
+        self.assertTrue(b.try_add(a1))
+        self.assertTrue(b.try_add(a2))
+        self.assertTrue(b.try_add(a3))
+        self.assertTrue(b.try_add(a4))
+        self.assertEqual(b.find_best_name(), 'Alan Mathison Turing')
+
+    def test_get_author_list(self):
+        b = GitAuthorNameBuilder()
+        a1 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'alan MathisOn  Turing'))
+        a2 = ComparableGitAuthor(
+            GitAuthor('Aturing@opencs.com.br', 'A. Turing'))
+        a3 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan MathisOn  Turing'))
+        a4 = ComparableGitAuthor(
+            GitAuthor('Aturing2@opencs.com.br', 'alan Turing'))
+
+        self.assertTrue(b.try_add(a1))
+        self.assertTrue(b.try_add(a2))
+        self.assertTrue(b.try_add(a3))
+        self.assertTrue(b.try_add(a4))
+        l = b.get_author_list()
+        self.assertEqual(l, [a2.author, a3.author, a1.author, a4.author])
+
+
 class TestGitLog(unittest.TestCase):
 
     def test_constructor(self):
