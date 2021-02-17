@@ -56,7 +56,7 @@ class Options:
                 f'"{self.output_dir}" is not a valid output directory.')
 
 
-STATIC_EXTENSIONS = ['.css', '.png', '.svg', '.jpg']
+STATIC_EXTENSIONS = ['.css', '.png', '.svg', '.jpg', '.js']
 
 
 class Engine:

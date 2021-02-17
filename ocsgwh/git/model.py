@@ -63,7 +63,7 @@ class GitDiffEntry:
     Instances of this class are expected to be immutable.
     """
 
-    def __init__(self, file_name: str, added: int, deleted: int, update_count: int = -1) -> None:
+    def __init__(self, file_name: str, added: int, deleted: int, update_count: int = 0) -> None:
         self._file_name = file_name
         self._added = added
         self._deleted = deleted

@@ -16,108 +16,52 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
 from datetime import date, timedelta
-from collections import OrderedDict
-from typing import Any, Callable
 import pygal
+from .historgram import DailyHistogram
 from .git.model import *
 
 ONE_DAY_TIME_DELTA = timedelta(days=1)
 
 
-class DiffSummary:
+class DiffSummaryValue:
     def __init__(self, added: int = 0, deleted: int = 0) -> None:
         self.added = added
         self.deleted = deleted
-        self.count = 0
-
-    def update_with_entry(self, entry: GitDiffEntry):
-        self.added += entry.added
-        self.deleted += entry.deleted
-        self.count += 1
-
-    def update_with_diff(self, diff: GitDiff):
-        for entry in diff:
-            self.update_with_entry(entry)
+        self.update_count = 0
 
     @property
     def changed(self):
         return self.added + self.deleted
 
-
-def create_empty_histogram(start_date: date, end_date: date, value_class):
-    """
-    This class creates an empty histogram with a certain number of days.
-    The parameter start_date: is the first day of the histogram, count is
-    the number of days and value_class is the class that will hold the
-    value (e.g.: DiffReport).
-    """
-    ret = OrderedDict()
-    while start_date < end_date:
-        ret[start_date] = value_class()
-        start_date = start_date + ONE_DAY_TIME_DELTA
-    return ret
-
-
-class BaseHistogramBuilder:
-    """
-    This is the base class for all histogram builders that can process GitLog
-    instances.
-
-    The parameter default_value_creator must be a class or a function that will
-    be used to create a new default entry for day in the histogram. This
-    class constructor or function will be invoked without any parameters.
-    """
-
-    def __init__(self, start_date: date, end_date: date, default_value_creator) -> None:
+    def new():
         """
+        Creates a new instace with all properties set to 0.
+
+        This static method was designed to be used with ``Histogram`` as ``create_value_func``.
         """
-        self._start_date = start_date
-        self._end_date = end_date
-        self._histogram = OrderedDict()
-        while start_date < end_date:
-            self.histogram[start_date] = default_value_creator()
-            start_date = start_date + ONE_DAY_TIME_DELTA
+        return DiffSummaryValue()
 
-    @property
-    def start_date(self) -> date:
-        return self._start_date
-
-    @property
-    def end_date(self) -> date:
-        return self._end_date
-
-    @property
-    def histogram(self) -> OrderedDict:
-        return self._histogram
-
-    def update_entry(self, commit: GitCommit, current_value: Any) -> Any:
+    @staticmethod
+    def update(old, v):
         """
-        This method is called by scan() to update the day's entry with a new
-        GitCommit. It receives the commit and the current_value and must return
-        the new value after the update.
+        Updates the old (``DiffSummaryValue``) entry with another intance of 
+        ``DiffSummaryValue``, ``GitDiffEntry`` or ``GitDiff``. It always returns old.
 
-        Regardless of the ability to update current_value in place, this method
-        must return the new value or the updated current_value.
+        Each call to this method increments ``update_count`` by one.
+
+        This static method was designed to be used with ``Histogram`` as ``update_value_func``.
         """
-        raise NotImplemented('This method must be implemented by subclasses.')
-
-    def scan(self, log: GitLog):
-        for commit in log:
-            d = commit.timestamp.date()
-            if d >= self.start_date and d < self.end_date:
-                self.histogram[d] = self.update_entry(
-                    commit, self.histogram[d])
-
-
-class DiffHistogramBuilder (BaseHistogramBuilder):
-
-    def __init__(self, start_date: date, end_date: date) -> None:
-        super(BaseHistogramBuilder, self).__init__(
-            start_date, end_date, DiffSummary)
-
-    def update_entry(self, commit: GitCommit, current_value: DiffSummary) -> DiffSummary:
-        current_value.update_with_diff(commit.diff)
-        return current_value
+        old.update_count += 1
+        if isinstance(v, DiffSummaryValue) or isinstance(v, GitDiffEntry):
+            old.added += v.added
+            old.deleted += v.deleted
+        elif isinstance(v, GitDiff):
+            for d in v:
+                old.added += d.added
+                old.deleted += d.deleted
+        else:
+            raise ValueError('')
+        return old
 
 
 def create_author_diff_report(log: GitLog) -> list:
@@ -149,17 +93,32 @@ def basic_log_vars(log: GitLog):
             'author_count': len(log.authors)}
 
 
-def generate_histogram(og: GitLog, title: str) -> str:
-    line_chart = pygal.Bar()
+def generate_histogram(log: GitLog, title: str) -> str:
+
+    h = DailyHistogram(create_value_func=DiffSummaryValue.new,
+                       update_value_func=DiffSummaryValue.update)
+    # Compute the histogram
+    for commit in log:
+        if commit.diff:
+            h.update_entry(commit.timestamp, commit.diff)
+
+    labels = h.keys()
+    added = []
+    deleted = []
+    commits = []
+    for l in labels:
+        v = h[l]
+        added.append(v.added)
+        deleted.append(v.deleted)
+        commits.append(v.update_count)
+
+    line_chart = pygal.Bar(x_label_rotation=90)
     line_chart.title = title
-    line_chart.x_labels = map(str, range(2002, 2013))
-    line_chart.add('Added', [None, None, {'value': 0}, 16.6,
-                             25,   31, 36.4, 45.5, 46.3, 42.8, 37.1])
-    line_chart.add('Deleted',  [None, None, None, None,
-                                None, None,    0,  3.9, 10.8, 23.8, 35.3])
-    line_chart.add('Commits',      [85.8, 84.6, 84.7, 74.5,
-                                    66, 58.6, 54.7, 44.8, 36.2, 26.6, 20.1])
-    return line_chart.render_data_uri()
+    line_chart.x_labels = map(str, labels)
+    line_chart.add('Added', added)
+    line_chart.add('Deleted', deleted)
+    line_chart.add('Commits', commits)
+    return [('title', line_chart.render_data_uri()), ('title', line_chart.render_data_uri())]
 
 
 def create_global_git_report(log: GitLog) -> list:

@@ -100,7 +100,8 @@ class Histogram:
 
         The parameter ``update_value_func`` is a function that used to update the value.
         It takes at least two parameters, the old value and any other parameter you want.
-        It returns the updated value that will replace the old one.
+        It returns the updated value that will replace the old one. For optimization reasons,
+        it is allowed update old and return it.
         """
         self._create_value_func = create_value_func
         self._update_value_func = update_value_func

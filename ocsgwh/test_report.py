@@ -21,40 +21,54 @@ from .git.test_model import get_sample_git_log
 from .report import *
 
 
-class TestDiffSummary(unittest.TestCase):
+class TestDiffSummaryValue(unittest.TestCase):
 
     def test_contructor(self):
-        r = DiffSummary()
-        self.assertEqual(r.added, 0)
-        self.assertEqual(r.deleted, 0)
-        self.assertEqual(r.changed, r.added + r.deleted)
+        v = DiffSummaryValue()
+        self.assertEqual(v.added, 0)
+        self.assertEqual(v.deleted, 0)
+        self.assertEqual(v.update_count, 0)
+        self.assertEqual(v.changed, 0)
 
-        r = DiffSummary(1, 2)
-        self.assertEqual(r.added, 1)
-        self.assertEqual(r.deleted, 2)
-        self.assertEqual(r.changed, r.added + r.deleted)
+        v = DiffSummaryValue(1, 2)
+        self.assertEqual(v.added, 1)
+        self.assertEqual(v.deleted, 2)
+        self.assertEqual(v.update_count, 0)
+        self.assertEqual(v.changed, 3)
 
-    def test_update_with_entry(self):
-        r = DiffSummary()
-        d = GitDiffEntry('file', 1, 2)
+    def test_new(self):
+        v = DiffSummaryValue.new()
+        self.assertEqual(v.added, 0)
+        self.assertEqual(v.deleted, 0)
+        self.assertEqual(v.update_count, 0)
+        self.assertEqual(v.changed, 0)
 
-        r.update_with_entry(d)
-        self.assertEqual(r.added, 1)
-        self.assertEqual(r.deleted, 2)
-        self.assertEqual(r.changed, r.added + r.deleted)
+    def test_update(self):
+        v = DiffSummaryValue.new()
 
-        r.update_with_entry(d)
-        self.assertEqual(r.added, 2)
-        self.assertEqual(r.deleted, 4)
-        self.assertEqual(r.changed, r.added + r.deleted)
+        self.assertEqual(v.added, 0)
+        self.assertEqual(v.deleted, 0)
+        self.assertEqual(v.update_count, 0)
+        self.assertEqual(v.changed, 0)
 
-    def test_update_with_diff(self):
-        r = DiffSummary()
-        db = GitDiffBuilder()
-        db.add_entry('file', 1, 2)
-        db.add_entry('file2', 3, 4)
+        uv = DiffSummaryValue.update(v, DiffSummaryValue(1, 2))
+        self.assertEqual(v.added, 1)
+        self.assertEqual(v.deleted, 2)
+        self.assertEqual(v.update_count, 1)
+        self.assertEqual(v.changed, 3)
+        self.assertEqual(id(v), id(uv))
 
-        r.update_with_diff(db.build())
-        self.assertEqual(r.added, 4)
-        self.assertEqual(r.deleted, 6)
-        self.assertEqual(r.changed, r.added + r.deleted)
+        uv = DiffSummaryValue.update(v, GitDiffEntry('file', 1, 2))
+        self.assertEqual(v.added, 2)
+        self.assertEqual(v.deleted, 4)
+        self.assertEqual(v.update_count, 2)
+        self.assertEqual(v.changed, 6)
+        self.assertEqual(id(v), id(uv))
+
+        uv = DiffSummaryValue.update(v,
+                                     GitDiff([GitDiffEntry('file', 1, 2), GitDiffEntry('file2', 1, 2)]))
+        self.assertEqual(v.added, 4)
+        self.assertEqual(v.deleted, 8)
+        self.assertEqual(v.update_count, 3)
+        self.assertEqual(v.changed, 12)
+        self.assertEqual(id(v), id(uv))
