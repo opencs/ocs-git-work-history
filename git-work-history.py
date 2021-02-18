@@ -16,14 +16,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
 import argparse
+from ocsgwh.versioninfo import VERSION
 import sys
 from pathlib import Path
 from ocsgwh import Engine, Options, EngineError
-
-PROGRAM_DESC = """
-%(prog)s - A Git work history report generator
-Copyright (C) 2021 Open Communications Security
-"""
+PROGRAM_DESC = \
+    '%(prog)s - A Git work history report generator\n' + \
+    f'Version: {VERSION}\n' \
+    'Copyright (C) 2021 Open Communications Security'
 LICENSE_DESC = """
 This program comes with ABSOLUTELY NO WARRANTY;
 This is free software, and you are welcome to redistribute it
@@ -45,7 +45,6 @@ parser.add_argument('-t', metavar='<report title>', type=str,
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    print(args)
     options = Options(args.git_repo, args.output_dir, args.title)
     engine = Engine(options)
     try:

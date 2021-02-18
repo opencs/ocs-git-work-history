@@ -25,6 +25,7 @@ from pathlib import Path
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2.environment import Template
+from ocsgwh.versioninfo import VERSION
 
 from logging import getLogger
 LOGGER = getLogger(__name__)
@@ -99,7 +100,9 @@ class Engine:
         self.basic_template_vars = {
             'title': self.options.title,
             'repository_dir': str(
-                self.options.repo_dir.absolute()), 'report_date': datetime.now()}
+                self.options.repo_dir.absolute()),
+            'report_date': datetime.now(),
+            'version': VERSION}
 
         self.generate_global_diff(log)
         self.deploy_index(log)
