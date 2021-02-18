@@ -53,6 +53,13 @@
     </tr>
 </table>
 {% endblock %}
+{% block file_types %}
+<h2>File types</h2>
+<div>
+    <embed src="{{files_by_count}}" class="daily_img">
+    <embed src="{{changes_by_type}}" class="daily_img">
+</div>
+{% endblock %}
 {% block histograms %}
 <h2>Activity histogram</h2>
 
@@ -92,16 +99,19 @@
         <th>Added</th>
         <th>Deleted</th>
         <th>Changes</th>
+        <th>Balance</th>
         <th>Update count</th>
+        <th>Class</th>
     </tr>
     {% for d in diff %}
-    <tr class="diff_{{d.diff_class}}">
-
+    <tr class="diff_{{d.diff_class.value}}">
         <td>{{ d.file_name }}</td>
         <td>{{ d.added }}</td>
         <td>{{ d.deleted }}</td>
         <td>{{ d.changed }}</td>
+        <td>{{ d.balance }}</td>
         <td>{{ d.update_count }}</td>
+        <td>{{ d.diff_class.value }}</td>
     </tr>
     {% endfor %}
     <tr class="summary">
@@ -109,6 +119,9 @@
         <td>{{ total_added }}</td>
         <td>{{ total_deleted }}</td>
         <td>{{ total_changed }}</td>
+        <td>{{ total_balance }}</td>
+        <td></td>
+        <td></td>
     </tr>
 </table>
 {% endblock %}

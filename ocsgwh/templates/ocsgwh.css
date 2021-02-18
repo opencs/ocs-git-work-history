@@ -103,7 +103,7 @@ tr.diff_new {
     background-color: lightgreen;
 }
 
-tr.diff_added {
+tr.diff_incremental {
     background-color: lightcyan;
 }
 

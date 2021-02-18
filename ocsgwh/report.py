@@ -16,8 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
 from datetime import date, timedelta
+from collections import Counter
 import pygal
-from .historgram import DailyHistogram, DateSequenceIterator, ONE_WEEK_DELTA, find_previous_sunday, WeeklyHistogram
+from .historgram import DailyHistogram, DateSequenceIterator, Histogram, ONE_WEEK_DELTA, find_previous_sunday, WeeklyHistogram
 from .git.model import *
 
 ONE_DAY_TIME_DELTA = timedelta(days=1)
@@ -163,6 +164,16 @@ def generate_weakly_histogram(log: GitLog) -> str:
     return (line_chart.title, line_chart.render_data_uri())
 
 
+def create_pie_chart(values: Counter, title: str):
+    pie_chart = pygal.Pie()
+    pie_chart.title = title
+    keys = [x for x in values]
+    keys.sort()
+    for k in keys:
+        pie_chart.add(k, values[k])
+    return pie_chart.render_data_uri()
+
+
 def create_global_git_report(log: GitLog) -> list:
     b = GitDiffBuilder()
 
@@ -181,13 +192,23 @@ def create_global_git_report(log: GitLog) -> list:
     added_only = 0
     renames = 0
     binaries = 0
+    balance = 0
+    file_type_counter = Counter()
+    file_type_changes = Counter()
     for d in diff:
         added += d.added
         deleted += d.deleted
+        balance += d.balance
         if d.deleted == 0 and d.update_count == 1:
             added_only += 1
         if d.rename:
             renames += 1
+        else:
+            # TODO Improve this code later as it is too ugly
+            t = d.file_name.split('.')[-1]
+            file_type_counter.update([t])
+            file_type_changes.update([t] * d.changed)
+
         if d.binary:
             binaries += 1
 
@@ -195,8 +216,13 @@ def create_global_git_report(log: GitLog) -> list:
     weekly_histo = generate_weakly_histogram(log)
     mean_changes = float(added + deleted) / basic_log['days_with_commits']
 
+    files_by_count = create_pie_chart(file_type_counter, 'File type count')
+    changes_by_type = create_pie_chart(
+        file_type_changes, 'Changes per file type')
+
     return {'diff': diff, 'total_added': added, 'total_deleted': deleted,
             'total_changed': added + deleted, 'mean_changes_per_day': mean_changes,
             'file_count': len(diff), 'added_only': added_only,
-            'merges': merges, 'renames': renames, 'binaries': binaries, 'histogram': histo,
-            'weekly_histo': weekly_histo, **basic_log}
+            'merges': merges, 'renames': renames, 'binaries': binaries, 'total_balance': balance,
+            'files_by_count': files_by_count, 'changes_by_type': changes_by_type,
+            'histogram': histo, 'weekly_histo': weekly_histo, **basic_log}

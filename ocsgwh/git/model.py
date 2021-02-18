@@ -68,6 +68,7 @@ class GitDiffEntryType(Enum):
     RENAME = 'rename'
     # Binary
     BINARY = 'binary'
+    INCREMENTAL = 'incremental'
     # Anything else
     NORMAL = 'normal'
 
@@ -109,6 +110,10 @@ class GitDiffEntry:
         return self.added + self.deleted
 
     @property
+    def balance(self) -> int:
+        return self.added - self.deleted
+
+    @property
     def update_count(self) -> int:
         return self._update_count
 
@@ -122,22 +127,22 @@ class GitDiffEntry:
 
     def _compute_diff_class(self):
         if self.rename:
-            return GitDiffEntryType.RENAME.value
+            return GitDiffEntryType.RENAME
         if self.binary:
-            return GitDiffEntryType.BINARY.value
+            return GitDiffEntryType.BINARY
         if self.deleted == 0:
             if self.added == 0:
-                return 'empty'
+                return GitDiffEntryType.EMPTY
             else:
                 if self.update_count == 1:
-                    return 'new'
+                    return GitDiffEntryType.NEW
                 else:
-                    return 'added'
+                    return GitDiffEntryType.INCREMENTAL
         else:
             if self.added == self.deleted and self.update_count > 1:
-                return 'removed'
+                return GitDiffEntryType.REMOVED
             else:
-                return 'normal'
+                return GitDiffEntryType.NORMAL
 
     @property
     def diff_class(self) -> str:
