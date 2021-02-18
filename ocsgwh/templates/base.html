@@ -3,7 +3,7 @@
 
 <head>
     {% block head %}
-    <title>OpenCS Git Work History - From {{repository_dir}}</title>
+    <title>OpenCS Git Work History - {{title}}</title>
     <link rel="stylesheet" href="ocsgwh.css" type="text/css">
     {% endblock %}
 </head>
@@ -18,7 +18,7 @@
         <div id="topbar_title">
             {% block title %}
             <h1>OpenCS Git Work History Report</h1>
-            <h2>From {{repository_dir}}</h2>
+            <h2>Git Repository {{title}}</h2>
             {% endblock %}
         </div>
     </div>

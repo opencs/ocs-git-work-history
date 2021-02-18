@@ -39,10 +39,14 @@ class EngineError(Exception):
 
 
 class Options:
-    def __init__(self, repo_dir: Path, output_dir: Path) -> None:
+    def __init__(self, repo_dir: Path, output_dir: Path, title: str) -> None:
         self.repo_dir = repo_dir
         self.output_dir = output_dir
         self.template_dir = TEMPLATE_DIR
+        if title:
+            self.title = title
+        else:
+            self.title = repo_dir
 
     def is_output_dir_valid(self, dir: Path):
         return not dir.exists() or dir.is_dir()
@@ -92,8 +96,10 @@ class Engine:
         self.options.check_options()
         self.prepare_output_dir()
         log = self.get_git_log()
-        self.basic_template_vars = {'repository_dir': str(
-            self.options.repo_dir.absolute()), 'report_date': datetime.now()}
+        self.basic_template_vars = {
+            'title': self.options.title,
+            'repository_dir': str(
+                self.options.repo_dir.absolute()), 'report_date': datetime.now()}
 
         self.generate_global_diff(log)
         self.deploy_index(log)

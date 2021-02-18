@@ -39,11 +39,14 @@ parser.add_argument('git_repo', metavar='<repository dir>', type=Path,
                     help='Git repository directory.')
 parser.add_argument('output_dir', metavar='<output directory>', type=Path,
                     help='Output directory.')
-
+parser.add_argument('-t', metavar='<report title>', type=str,
+                    dest='title', default=None,
+                    help='Output directory.')
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    options = Options(args.git_repo, args.output_dir)
+    print(args)
+    options = Options(args.git_repo, args.output_dir, args.title)
     engine = Engine(options)
     try:
         engine.run()
