@@ -205,7 +205,7 @@ def create_global_git_report(log: GitLog) -> list:
             renames += 1
         else:
             # TODO Improve this code later as it is too ugly
-            t = d.file_name.split('.')[-1]
+            t = d.file_name.split('/')[-1].split('.')[-1].lower()
             file_type_counter.update([t])
             file_type_changes.update([t] * d.changed)
 
