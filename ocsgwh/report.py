@@ -168,18 +168,28 @@ def create_global_git_report(log: GitLog) -> list:
 
     basic_log = basic_log_vars(log)
 
+    merges = 0
     for c in log:
         b.add_diff(c.diff)
+        if c.commit_type == GitCommitType.MERGE:
+            merges += 1
+
     diff = list(b.build())
     diff.sort(key=lambda x: x.file_name)
     added = 0
     deleted = 0
     added_only = 0
+    renames = 0
+    binaries = 0
     for d in diff:
         added += d.added
         deleted += d.deleted
-        if d.deleted == 0:
+        if d.deleted == 0 and d.update_count == 1:
             added_only += 1
+        if d.rename:
+            renames += 1
+        if d.binary:
+            binaries += 1
 
     histo = generate_histogram(log)
     weekly_histo = generate_weakly_histogram(log)
@@ -187,5 +197,6 @@ def create_global_git_report(log: GitLog) -> list:
 
     return {'diff': diff, 'total_added': added, 'total_deleted': deleted,
             'total_changed': added + deleted, 'mean_changes_per_day': mean_changes,
-            'file_count': len(diff), 'added_only': added_only, 'histogram': histo,
+            'file_count': len(diff), 'added_only': added_only,
+            'merges': merges, 'renames': renames, 'binaries': binaries, 'histogram': histo,
             'weekly_histo': weekly_histo, **basic_log}

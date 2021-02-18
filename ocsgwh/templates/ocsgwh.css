@@ -100,7 +100,7 @@ table.diff_log {
 }
 
 tr.diff_new {
-    background-color: chartreuse;
+    background-color: lightgreen;
 }
 
 tr.diff_added {
@@ -112,11 +112,19 @@ tr.diff_normal {
 }
 
 tr.diff_empty {
-    background-color: gray;
+    background-color: lightgray;
 }
 
 tr.diff_removed {
-    background-color:red;
+    background-color:lightcoral;
+}
+
+tr.diff_binary {
+    background-color:yellow;
+}
+
+tr.diff_rename {
+    background-color:lightyellow;
 }
 
 tr.summary {

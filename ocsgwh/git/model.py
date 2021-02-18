@@ -19,6 +19,7 @@ from functools import total_ordering
 from datetime import datetime, date
 from enum import Enum, auto
 from hashlib import sha1
+import re
 import codecs
 
 
@@ -56,6 +57,21 @@ class GitAuthor:
         return self._rep == o._rep
 
 
+class GitDiffEntryType(Enum):
+    # A file that has no lines and a single update
+    EMPTY = 'empty'
+    # A file that have a single update and no deletions
+    NEW = 'new'
+    # A file which the number of deletions matches the number of additions
+    REMOVED = 'removed'
+    # A rename of a file its name contains '{Algorithms.cs => Algorithm.cs}'
+    RENAME = 'rename'
+    # Binary
+    BINARY = 'binary'
+    # Anything else
+    NORMAL = 'normal'
+
+
 class GitDiffEntry:
     """
     This class implements a Git diff entry. It contains the name of the
@@ -64,11 +80,17 @@ class GitDiffEntry:
     Instances of this class are expected to be immutable.
     """
 
-    def __init__(self, file_name: str, added: int, deleted: int, update_count: int = 0) -> None:
+    RENAME_PATTERN = re.compile(r'.*\{.+ \=\> .+\}.*')
+
+    def __init__(self, file_name: str, added: int, deleted: int, update_count: int = 0, binary: bool = False) -> None:
         self._file_name = file_name
+        self._binary = binary
         self._added = added
         self._deleted = deleted
         self._update_count = update_count
+        m = GitDiffEntry.RENAME_PATTERN.match(file_name)
+        self._rename = bool(m)
+        self._diff_class = self._compute_diff_class()
 
     @property
     def file_name(self) -> str:
@@ -91,7 +113,18 @@ class GitDiffEntry:
         return self._update_count
 
     @property
-    def diff_class(self) -> str:
+    def binary(self) -> int:
+        return self._binary
+
+    @property
+    def rename(self) -> int:
+        return self._rename
+
+    def _compute_diff_class(self):
+        if self.rename:
+            return GitDiffEntryType.RENAME.value
+        if self.binary:
+            return GitDiffEntryType.BINARY.value
         if self.deleted == 0:
             if self.added == 0:
                 return 'empty'
@@ -105,6 +138,10 @@ class GitDiffEntry:
                 return 'removed'
             else:
                 return 'normal'
+
+    @property
+    def diff_class(self) -> str:
+        return self._diff_class
 
     def __eq__(self, o: object) -> bool:
         return self.file_name == o.file_name and self.added == o.added and self.deleted == o.deleted
@@ -156,7 +193,13 @@ class GitDiffBuilder:
     This class is a builder for ``GitDiff`` instances.
     """
     class Accumulator:
-        __slots__ = ('added', 'deleted', 'update_count')
+        __slots__ = ('added', 'deleted', 'update_count', 'binary')
+
+        def __init__(self, added, deleted, update_count, binary) -> None:
+            self.added = added
+            self.deleted = deleted
+            self.update_count = update_count
+            self.binary = binary
 
     def __init__(self) -> None:
         self._entries = dict()
@@ -170,7 +213,7 @@ class GitDiffBuilder:
         self._entries.clear()
         return self
 
-    def add_entry(self, file_name: str, added: int, deleted: int) -> object:
+    def add_entry(self, file_name: str, added: int, deleted: int, binary: bool = False) -> object:
         """
         Adds a diff entry. It will update existing file statistics if it is
         already registered.
@@ -183,10 +226,7 @@ class GitDiffBuilder:
             entry.deleted += deleted
             entry.update_count += 1
         else:
-            entry = GitDiffBuilder.Accumulator()
-            entry.added = added
-            entry.deleted = deleted
-            entry.update_count = 1
+            entry = GitDiffBuilder.Accumulator(added, deleted, 1, binary)
             self._entries[file_name] = entry
         return self
 
@@ -196,7 +236,7 @@ class GitDiffBuilder:
 
         Returns: self.
         """
-        return self.add_entry(entry.file_name, entry.added, entry.deleted)
+        return self.add_entry(entry.file_name, entry.added, entry.deleted, entry.binary)
 
     def add_diff(self, diff: GitDiff) -> object:
         """
@@ -223,7 +263,7 @@ class GitDiffBuilder:
         for f in files:
             entry = self._entries[f]
             entries.append(GitDiffEntry(
-                f, entry.added, entry.deleted, entry.update_count))
+                f, entry.added, entry.deleted, entry.update_count, entry.binary))
         return GitDiff(entries)
 
 
