@@ -4,8 +4,8 @@ Copyright (c) 2021 Open Communications Security
 ## Description
 
 **OpenCS Git Work History** is a small console tool written in Python 3 that
-was designed to create simple report of ativities on Git repositories, specially
-those who use the brench-on-feature mode.
+was designed to create simple report of activities on Git repositories, specially
+those who use the branch-on-feature mode.
 
 It generates a simple reports in HTML 5 that shows the number of lines of code (LOC) 
 contributed and/or removed by each developer on each day of work on all
