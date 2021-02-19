@@ -190,6 +190,7 @@ def create_global_git_report(log: GitLog) -> list:
     added = 0
     deleted = 0
     added_only = 0
+    added_only_lines = 0
     renames = 0
     binaries = 0
     balance = 0
@@ -201,6 +202,7 @@ def create_global_git_report(log: GitLog) -> list:
         balance += d.balance
         if d.deleted == 0 and d.update_count == 1:
             added_only += 1
+            added_only_lines += d.added
         if d.rename:
             renames += 1
         else:
@@ -222,7 +224,7 @@ def create_global_git_report(log: GitLog) -> list:
 
     return {'diff': diff, 'total_added': added, 'total_deleted': deleted,
             'total_changed': added + deleted, 'mean_changes_per_day': mean_changes,
-            'file_count': len(diff), 'added_only': added_only,
+            'file_count': len(diff), 'added_only': added_only, 'added_only_lines': added_only_lines,
             'merges': merges, 'renames': renames, 'binaries': binaries, 'total_balance': balance,
             'files_by_count': files_by_count, 'changes_by_type': changes_by_type,
             'histogram': histo, 'weekly_histo': weekly_histo, **basic_log}
