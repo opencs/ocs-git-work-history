@@ -19,7 +19,7 @@ of the team.
 
 This tool is inspired by other Git statistics tools such as
 **gitinspector** and **gitstats** but are focused on the overall
-repository statistics instead of a detailed brench details. So, if
+repository statistics instead of a detailed branch details. So, if
 you need this kind of report, please look for tools like 
 [**gitstats**](http://gitstats.sourceforge.net/), 
 [**gitinspector**](https://github.com/ejwa/gitinspector), etc.
@@ -50,10 +50,6 @@ These are the features that may be added in the future:
 * Some charts need to be divided in multiple images as they may contain too much information to visualize;
 * Charts with no activity are still visible;
 * No customization options yet;
-
-### Demo
-
-If you want to see how the report is generated, see this [demo](sample/index.html).
 
 ## Dependencies
 
