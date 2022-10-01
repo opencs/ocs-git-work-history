@@ -234,18 +234,26 @@ def generate_weekly_author_activity(authors: AuthorNameSet, h: WeeklyHistogram) 
     labels = h.keys()
     author_names = [x.name for x in authors.authors]
     author_count = {}
+    total_authors = []
     commit_count = []
     for l in labels:
         v = h[l]
         commit_count.append(v.counter.total())
+        total_authors.append(v.author_count)
         for a in author_names:
             l = author_count.get(a, list())
             l.append(v.counter[a])
             author_count[a] = l
-    s = 'Number of authors;'
+    s = 'Number of Commits;'
     for c in commit_count:
         s = s + f'{c};'
     s = s + '\n\n'
+
+    s = s + 'Number of authors;'
+    for c in total_authors:
+        s = s + f'{c};'
+    s = s + '\n\n'
+
     for a in author_names:
         s = s + f'{a};'
         for c in author_count[a]:
