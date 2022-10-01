@@ -68,6 +68,13 @@
 <embed src="{{weekly_histo[1]}}" class="weekly_img">
 <div class="text">{{weekly_histo[0]}}</div>
 
+{% if weekly_author_histo is defined %}
+<h3>Authors</h3>
+
+<embed src="{{weekly_author_histo[1]}}" class="weekly_img">
+<div class="text">{{weekly_author_histo[0]}}</div>
+{% endif %}
+
 <h3>Daily</h3>
 
 <!-- Slideshow container -->

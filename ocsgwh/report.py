@@ -44,12 +44,10 @@ class DiffSummaryValue:
 
     def __iadd__(self, v):
         """
-        Updates the old (``DiffSummaryValue``) entry with another intance of 
-        ``DiffSummaryValue``, ``GitDiffEntry`` or ``GitDiff``. It always returns old.
+        Updates this instance withanother intance of ``DiffSummaryValue``,
+        ``GitDiffEntry`` or ``GitDiff``. It always returns self.
 
         Each call to this method increments ``update_count`` by one.
-
-        This static method was designed to be used with ``Histogram`` as ``update_value_func``.
         """
         self.update_count += 1
         if isinstance(v, DiffSummaryValue) or isinstance(v, GitDiffEntry):
@@ -59,6 +57,38 @@ class DiffSummaryValue:
             for d in v:
                 self.added += d.added
                 self.deleted += d.deleted
+        else:
+            raise ValueError('')
+        return self
+
+
+class UniqueAuthorValue:
+    def __init__(self) -> None:
+        self._seen = set()
+        self._builders = []
+
+    @property
+    def author_count(self):
+        return len(self._builders)
+
+    def _update(self, author: GitAuthor):
+        if not author in self._seen:
+            self._seen.add(author)
+            found = False
+            ca = ComparableGitAuthor(author)
+            for candidate in self._builders:
+                if candidate.try_add(ca):
+                    found = True
+                    break
+            if not found:
+                self._builders.append(GitAuthorNameBuilder(ca))
+
+    def __iadd__(self, v):
+        """
+        Updates this entry with a ``GitAuthor`` instance.
+        """
+        if isinstance(v, GitAuthor):
+            self._update(v)
         else:
             raise ValueError('')
         return self
@@ -133,7 +163,7 @@ def generate_histogram(log: GitLog) -> str:
     return histograms
 
 
-def generate_weakly_histogram(log: GitLog) -> str:
+def generate_weekly_histogram(log: GitLog) -> str:
 
     h = WeeklyHistogram(create_value_func=DiffSummaryValue.new)
     # Compute the histogram
@@ -157,6 +187,26 @@ def generate_weakly_histogram(log: GitLog) -> str:
     line_chart.add('Added', added)
     line_chart.add('Deleted', deleted)
     line_chart.add('Commits', commits)
+    return (line_chart.title, line_chart.render_data_uri())
+
+
+def generate_weekly_unique_author_histogram(log: GitLog) -> str:
+
+    h = WeeklyHistogram(create_value_func=UniqueAuthorValue)
+    # Compute the histogram
+    for commit in log:
+        h.update_entry(commit.timestamp, commit.author)
+
+    labels = h.keys()
+    author_count = []
+    for l in labels:
+        v = h[l]
+        author_count.append(v.author_count)
+
+    line_chart = pygal.Bar(x_label_rotation=90, height=800, width=1600)
+    line_chart.title = f'Weekly authors from {h.min_date} to {h.max_date}'
+    line_chart.x_labels = map(str, labels)
+    line_chart.add('Authors', author_count)
     return (line_chart.title, line_chart.render_data_uri())
 
 
@@ -211,7 +261,8 @@ def create_global_git_report(log: GitLog) -> list:
             binaries += 1
 
     histo = generate_histogram(log)
-    weekly_histo = generate_weakly_histogram(log)
+    weekly_histo = generate_weekly_histogram(log)
+    weekly_author_histo = generate_weekly_unique_author_histogram(log)
     mean_changes = float(added + deleted) / basic_log['days_with_commits']
 
     files_by_count = create_pie_chart(file_type_counter, 'File type count')
@@ -223,4 +274,6 @@ def create_global_git_report(log: GitLog) -> list:
             'file_count': len(diff), 'added_only': added_only, 'added_only_lines': added_only_lines,
             'merges': merges, 'renames': renames, 'binaries': binaries, 'total_balance': balance,
             'files_by_count': files_by_count, 'changes_by_type': changes_by_type,
-            'histogram': histo, 'weekly_histo': weekly_histo, **basic_log}
+            'histogram': histo, 'weekly_histo': weekly_histo,
+            'weekly_author_histo': weekly_author_histo,
+            **basic_log}
