@@ -90,12 +90,10 @@ class TestHistogram(unittest.TestCase):
         h = Histogram()
         self.assertFalse(h._entries)
         self.assertEqual(h._create_value_func(), 0)
-        self.assertEqual(h._update_value_func(1, 2), 3)
 
-        h = Histogram(lambda: 1234, lambda x, y, z: x + y + z)
+        h = Histogram(lambda: 1234)
         self.assertFalse(h._entries)
         self.assertEqual(h._create_value_func(), 1234)
-        self.assertEqual(h._update_value_func(1, 2, 3), 6)
 
     def test_access_op(self):
         h = Histogram()
@@ -157,19 +155,19 @@ class TestHistogram(unittest.TestCase):
             self.assertEqual(h[i], i * 2)
 
     def test_distinct_update_entry(self):
-        h = Histogram(update_value_func=lambda x, y, z: x + y + z)
+        h = Histogram()
 
         for i in range(10):
-            h.update_entry(i, i, 1)
+            h.update_entry(i, 1)
 
         for i in range(10):
-            self.assertEqual(h[i], i + 1)
+            self.assertEqual(h[i], 1)
 
         for i in range(10):
-            h.update_entry(i, i, 1)
+            h.update_entry(i, 2)
 
         for i in range(10):
-            self.assertEqual(h[i], (i + 1) * 2)
+            self.assertEqual(h[i], 3)
 
     def test_arrange_keys(self):
         h = Histogram()

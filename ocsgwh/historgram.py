@@ -92,7 +92,7 @@ class Histogram:
         def __next__(self):
             return self.source[next(self.key_seq)]
 
-    def __init__(self, create_value_func=lambda: 0, update_value_func=lambda a, b: a+b) -> None:
+    def __init__(self, create_value_func=lambda: 0) -> None:
         """
         Creates a new instance of this class. By default the value is a number and the 
         update function is the sum of the values.
@@ -105,7 +105,6 @@ class Histogram:
         it is allowed update old and return it.
         """
         self._create_value_func = create_value_func
-        self._update_value_func = update_value_func
         self._entries = OrderedDict()
 
     def arrange_keys(self, l: list) -> list:
@@ -158,7 +157,7 @@ class Histogram:
         """
         pass
 
-    def update_entry(self, key, *args):
+    def update_entry(self, key, arg):
         """
         Updates the key using the function ``update_value_func``. All
         parameters in ``*args`` are passed directly to the update function.
@@ -166,11 +165,11 @@ class Histogram:
         It will create new keys if the key does not exist.
         """
         key = self.group_key(key)
-        if key in self._entries:
-            old = self._entries[key]
-        else:
+        old = self._entries.get(key, None)
+        if old is None:
             old = self._create_value_func()
-        self.__setitem_core(key, self._update_value_func(old, *args))
+        old += arg
+        self.__setitem_core(key, old)
 
     def __bool__(self):
         return bool(self._entries)
@@ -223,8 +222,8 @@ class DailyHistogram(Histogram):
     instances. Furthermore, the scan
     """
 
-    def __init__(self, create_value_func=lambda: 0, update_value_func=lambda a, b: a+b) -> None:
-        super().__init__(create_value_func, update_value_func)
+    def __init__(self, create_value_func=lambda: 0) -> None:
+        super().__init__(create_value_func)
         self._min_date = date.max
         self._max_date = date.min
 
@@ -282,8 +281,8 @@ class WeeklyHistogram(DailyHistogram):
     instances. Furthermore, the scan
     """
 
-    def __init__(self, create_value_func=lambda: 0, update_value_func=lambda a, b: a+b) -> None:
-        super().__init__(create_value_func, update_value_func)
+    def __init__(self, create_value_func=lambda: 0) -> None:
+        super().__init__(create_value_func)
 
     def group_key(self, key):
         return find_previous_sunday(super().group_key(key))

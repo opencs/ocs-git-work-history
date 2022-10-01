@@ -51,22 +51,24 @@ class TestDiffSummaryValue(unittest.TestCase):
         self.assertEqual(v.update_count, 0)
         self.assertEqual(v.changed, 0)
 
-        uv = DiffSummaryValue.update(v, DiffSummaryValue(1, 2))
+        uv = v
+        v += DiffSummaryValue(1, 2)
         self.assertEqual(v.added, 1)
         self.assertEqual(v.deleted, 2)
         self.assertEqual(v.update_count, 1)
         self.assertEqual(v.changed, 3)
         self.assertEqual(id(v), id(uv))
 
-        uv = DiffSummaryValue.update(v, GitDiffEntry('file', 1, 2))
+        uv = v
+        v += GitDiffEntry('file', 1, 2)
         self.assertEqual(v.added, 2)
         self.assertEqual(v.deleted, 4)
         self.assertEqual(v.update_count, 2)
         self.assertEqual(v.changed, 6)
         self.assertEqual(id(v), id(uv))
 
-        uv = DiffSummaryValue.update(v,
-                                     GitDiff([GitDiffEntry('file', 1, 2), GitDiffEntry('file2', 1, 2)]))
+        uv = v
+        v += GitDiff([GitDiffEntry('file', 1, 2), GitDiffEntry('file2', 1, 2)])
         self.assertEqual(v.added, 4)
         self.assertEqual(v.deleted, 8)
         self.assertEqual(v.update_count, 3)

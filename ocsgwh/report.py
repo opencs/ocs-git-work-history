@@ -42,8 +42,7 @@ class DiffSummaryValue:
         """
         return DiffSummaryValue()
 
-    @staticmethod
-    def update(old, v):
+    def __iadd__(self, v):
         """
         Updates the old (``DiffSummaryValue``) entry with another intance of 
         ``DiffSummaryValue``, ``GitDiffEntry`` or ``GitDiff``. It always returns old.
@@ -52,17 +51,17 @@ class DiffSummaryValue:
 
         This static method was designed to be used with ``Histogram`` as ``update_value_func``.
         """
-        old.update_count += 1
+        self.update_count += 1
         if isinstance(v, DiffSummaryValue) or isinstance(v, GitDiffEntry):
-            old.added += v.added
-            old.deleted += v.deleted
+            self.added += v.added
+            self.deleted += v.deleted
         elif isinstance(v, GitDiff):
             for d in v:
-                old.added += d.added
-                old.deleted += d.deleted
+                self.added += d.added
+                self.deleted += d.deleted
         else:
             raise ValueError('')
-        return old
+        return self
 
 
 def create_author_diff_report(log: GitLog) -> list:
@@ -119,8 +118,7 @@ FOUR_WEEKS_DELTA = timedelta(weeks=4)
 
 def generate_histogram(log: GitLog) -> str:
 
-    h = DailyHistogram(create_value_func=DiffSummaryValue.new,
-                       update_value_func=DiffSummaryValue.update)
+    h = DailyHistogram(create_value_func=DiffSummaryValue.new)
     # Compute the histogram
     for commit in log:
         if commit.diff:
@@ -132,14 +130,12 @@ def generate_histogram(log: GitLog) -> str:
         histograms.append(
             generate_histogram_image(h, start, end - ONE_DAY_TIME_DELTA))
         start = end
-
     return histograms
 
 
 def generate_weakly_histogram(log: GitLog) -> str:
 
-    h = WeeklyHistogram(create_value_func=DiffSummaryValue.new,
-                        update_value_func=DiffSummaryValue.update)
+    h = WeeklyHistogram(create_value_func=DiffSummaryValue.new)
     # Compute the histogram
     for commit in log:
         if commit.diff:
