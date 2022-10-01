@@ -82,16 +82,16 @@ class AuthorNameSet:
 
 class UniqueAuthorValue:
     def __init__(self, authors: AuthorNameSet) -> None:
-        self._seen = set()
+        self.counter = Counter()
         self._authors = authors
 
     @property
     def author_count(self):
-        return len(self._seen)
+        return len(self.counter)
 
     def _update(self, author: GitAuthor):
         name = self._authors.get_author_name(author)
-        self._seen.add(name.name)
+        self.counter.update([name.name])
 
     def __iadd__(self, v):
         """
@@ -210,14 +210,20 @@ def generate_weekly_unique_author_histogram(log: GitLog) -> str:
 
     labels = h.keys()
     author_count = []
+    commit_count = []
     for l in labels:
         v = h[l]
         author_count.append(v.author_count)
+        if v.author_count > 0:
+            commit_count.append(v.counter.total() / v.author_count)
+        else:
+            commit_count.append(0)
 
     line_chart = pygal.Bar(x_label_rotation=90, height=800, width=1600)
     line_chart.title = f'Weekly authors from {h.min_date} to {h.max_date}'
     line_chart.x_labels = map(str, labels)
-    line_chart.add('Authors', author_count)
+    line_chart.add('Unique authors', author_count)
+    line_chart.add('Mean commit count', commit_count)
     return (line_chart.title, line_chart.render_data_uri())
 
 
