@@ -125,13 +125,13 @@ class Engine:
 
     def generate_global_diff(self, log: GitLog):
         self.render_template('global_diff.html',
-                             'global_diff.html', create_global_git_report(log))
+                             'global_diff.html', create_global_git_report(log, True))
 
     def generate_author_diff(self, author: GitAuthorName, log: GitLog):
         filtered_log = log.by_author_name(author)
         self.render_template('author_diff.html',
                              author.author_key + '.html',
-                             {'author': author, **create_global_git_report(filtered_log)})
+                             {'author': author, **create_global_git_report(filtered_log, False)})
 
     def deploy_index(self, log: GitLog):
         self.render_template('index.html', 'index.html',

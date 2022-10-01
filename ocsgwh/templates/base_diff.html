@@ -75,6 +75,16 @@
 <div class="text">{{weekly_author_histo[0]}}</div>
 {% endif %}
 
+{% if activity_csv is not none %}
+<h3>Activity CSV</h3>
+
+<p>This CSV can be used to analyze the contributions of each author in a weekly basis. See
+<a href="https://github.com/opencs/ocs-git-work-history/issues/6">Add matrix with the number of commits of each contributor per week of the project #6</a>
+for further information about this format.</p>
+
+<textarea rows="20" cols="80" readonly="true">{{activity_csv}}</textarea>
+{% endif %}
+
 <h3>Daily</h3>
 
 <!-- Slideshow container -->

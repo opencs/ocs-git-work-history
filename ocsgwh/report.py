@@ -17,7 +17,7 @@
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
 from datetime import date, timedelta
 from collections import Counter
-from typing import List
+from typing import List, Tuple
 import pygal
 from .historgram import DailyHistogram, DateSequenceIterator, Histogram, ONE_WEEK_DELTA, find_previous_sunday, WeeklyHistogram
 from .git.model import *
@@ -200,14 +200,16 @@ def generate_weekly_histogram(log: GitLog) -> str:
     return (line_chart.title, line_chart.render_data_uri())
 
 
-def generate_weekly_unique_author_histogram(log: GitLog) -> str:
-
+def generate_weekly_author_histogram(log: GitLog) -> Tuple[AuthorNameSet, WeeklyHistogram]:
     authors = AuthorNameSet(log.authors)
     h = WeeklyHistogram(create_value_func=lambda: UniqueAuthorValue(authors))
     # Compute the histogram
     for commit in log:
         h.update_entry(commit.timestamp, commit.author)
+    return authors, h
 
+
+def generate_weekly_unique_author_histogram(h: WeeklyHistogram) -> str:
     labels = h.keys()
     author_count = []
     commit_count = []
@@ -227,6 +229,35 @@ def generate_weekly_unique_author_histogram(log: GitLog) -> str:
     return (line_chart.title, line_chart.render_data_uri())
 
 
+def generate_weekly_author_activity(authors: AuthorNameSet, h: WeeklyHistogram) -> str:
+
+    labels = h.keys()
+    author_names = [x.name for x in authors.authors]
+    author_count = {}
+    commit_count = []
+    for l in labels:
+        v = h[l]
+        commit_count.append(v.counter.total())
+        for a in author_names:
+            l = author_count.get(a, list())
+            l.append(v.counter[a])
+            author_count[a] = l
+    s = 'Number of authors;'
+    for c in commit_count:
+        s = s + f'{c};'
+    s = s + '\n\n'
+    for a in author_names:
+        s = s + f'{a};'
+        for c in author_count[a]:
+            s = s + f'{c};'
+        s = s + '\n'
+    s = s + ';'
+    for l in labels:
+        s = s + f'{str(l)};'
+    s = s + '\n'
+    return s
+
+
 def create_pie_chart(values: Counter, title: str):
     pie_chart = pygal.Pie()
     pie_chart.title = title
@@ -237,7 +268,7 @@ def create_pie_chart(values: Counter, title: str):
     return pie_chart.render_data_uri()
 
 
-def create_global_git_report(log: GitLog) -> list:
+def create_global_git_report(log: GitLog, all: bool) -> list:
     b = GitDiffBuilder()
 
     basic_log = basic_log_vars(log)
@@ -279,7 +310,17 @@ def create_global_git_report(log: GitLog) -> list:
 
     histo = generate_histogram(log)
     weekly_histo = generate_weekly_histogram(log)
-    weekly_author_histo = generate_weekly_unique_author_histogram(log)
+
+    # Author's statistics
+    authors_set, authors_histo = generate_weekly_author_histogram(log)
+    weekly_author_histo = generate_weekly_unique_author_histogram(
+        authors_histo)
+    if all:
+        activity_csv = generate_weekly_author_activity(
+            authors_set, authors_histo)
+    else:
+        activity_csv = None
+
     mean_changes = float(added + deleted) / basic_log['days_with_commits']
 
     files_by_count = create_pie_chart(file_type_counter, 'File type count')
@@ -292,5 +333,5 @@ def create_global_git_report(log: GitLog) -> list:
             'merges': merges, 'renames': renames, 'binaries': binaries, 'total_balance': balance,
             'files_by_count': files_by_count, 'changes_by_type': changes_by_type,
             'histogram': histo, 'weekly_histo': weekly_histo,
-            'weekly_author_histo': weekly_author_histo,
+            'weekly_author_histo': weekly_author_histo, "activity_csv": activity_csv,
             **basic_log}
