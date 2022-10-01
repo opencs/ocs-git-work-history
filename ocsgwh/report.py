@@ -17,6 +17,7 @@
 # along with this program.  If not, see < https: // www.gnu.org/licenses/>.
 from datetime import date, timedelta
 from collections import Counter
+from typing import List
 import pygal
 from .historgram import DailyHistogram, DateSequenceIterator, Histogram, ONE_WEEK_DELTA, find_previous_sunday, WeeklyHistogram
 from .git.model import *
@@ -62,26 +63,35 @@ class DiffSummaryValue:
         return self
 
 
+class AuthorNameSet:
+
+    def __init__(self, authors: List[GitAuthorName]) -> None:
+        self.authors = authors
+        self._cache = {}
+
+    def get_author_name(self, author: GitAuthor) -> GitAuthorName:
+        a = self._cache.get(author.email, None)
+        if a is not None:
+            return a
+        for candidate in self.authors:
+            if author in candidate:
+                self._cache[author.email] = candidate
+                return candidate
+        raise ValueError
+
+
 class UniqueAuthorValue:
-    def __init__(self) -> None:
+    def __init__(self, authors: AuthorNameSet) -> None:
         self._seen = set()
-        self._builders = []
+        self._authors = authors
 
     @property
     def author_count(self):
-        return len(self._builders)
+        return len(self._seen)
 
     def _update(self, author: GitAuthor):
-        if not author in self._seen:
-            self._seen.add(author)
-            found = False
-            ca = ComparableGitAuthor(author)
-            for candidate in self._builders:
-                if candidate.try_add(ca):
-                    found = True
-                    break
-            if not found:
-                self._builders.append(GitAuthorNameBuilder(ca))
+        name = self._authors.get_author_name(author)
+        self._seen.add(name.name)
 
     def __iadd__(self, v):
         """
@@ -192,7 +202,8 @@ def generate_weekly_histogram(log: GitLog) -> str:
 
 def generate_weekly_unique_author_histogram(log: GitLog) -> str:
 
-    h = WeeklyHistogram(create_value_func=UniqueAuthorValue)
+    authors = AuthorNameSet(log.authors)
+    h = WeeklyHistogram(create_value_func=lambda: UniqueAuthorValue(authors))
     # Compute the histogram
     for commit in log:
         h.update_entry(commit.timestamp, commit.author)
