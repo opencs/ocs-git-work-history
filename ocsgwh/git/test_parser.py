@@ -98,11 +98,11 @@ class TestGitCommitParser(unittest.TestCase):
         ]))
         self.assertEqual(len(d), 2)
         self.assertEqual(d[0].file_name, 'file0')
-        self.assertEqual(d[0].added, 5)
-        self.assertEqual(d[0].deleted, 6)
+        self.assertEqual(d[0].added, 10)
+        self.assertEqual(d[0].deleted, 12)
         self.assertEqual(d[1].file_name, 'file1')
-        self.assertEqual(d[1].added, 4)
-        self.assertEqual(d[1].deleted, 6)
+        self.assertEqual(d[1].added, 8)
+        self.assertEqual(d[1].deleted, 12)
 
     def test_parse_id(self):
         p = GitCommitParser()
